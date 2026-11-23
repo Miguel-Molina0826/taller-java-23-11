@@ -1,0 +1,128 @@
+===============================================================================
+CAFÉ SINTAXIS · NIVEL 06: ENUM
+SALIDAS DE CONSOLA, PREDICCIONES, TALLERES Y EVALUACIÓN RESUELTA
+===============================================================================
+
+1. SALIDA REAL DE CONSOLA AL EJECUTAR EL NIVEL 06
+-------------------------------------------------------------------------------
+$ java Main.java
+=== CAFÉ SINTAXIS · NIVEL 06: ENUM ===
+--- 1. Pruebas con Tamano de Vaso ---
+PEQUENO: 240 ml, +$0
+MEDIANO: 350 ml, +$1500
+GRANDE: 470 ml, +$2800
+
+--- 2. Pruebas con Transición de Estados de Pedido ---
+1 EN_PREPARACION → En barra
+2 LISTO → ¡Listo para recoger!
+3 ENTREGADO → Entregado
+Conteo EnumMap: {RECIBIDO=5, LISTO=3}
+Mililitros de GRANDE con valueOf: 470
+
+--- 3. Pruebas con Ventas por Categoría ---
+Bebida caliente: $13000
+Bebida fría: $12000
+Postre: $7000
+Sin ventas: Panadería
+Sin ventas: Bebida embotellada
+
+--- 4. Pruebas con Leches Vegetales ---
+AVENA +$1500
+ALMENDRAS +$1800
+
+--- 5. Pruebas con Plano de Mesas del Salón ---
+Distribución inicial de mesas: {LIBRE=3, OCUPADA=2, POR_LIMPIAR=1, RESERVADA=1, FUERA_DE_SERVICIO=1}
+Distribución tras avanzar un paso: {LIBRE=1, OCUPADA=3, POR_LIMPIAR=2, FUERA_DE_SERVICIO=2}
+
+--- 6. Pruebas con MedioPago ---
+EFECTIVO (Comisión: 0%) de $50000 -> Neto: $50000
+TARJETA (Comisión: 2%) de $50000 -> Neto: $49000
+BILLETERA (Comisión: 1%) de $50000 -> Neto: $49500
+
+2. PREDICCIONES PRIMM (SESIÓN 03 Y 04)
+-------------------------------------------------------------------------------
+* Predicción 1 (Sesión 03): ¿En qué orden imprime `EnumMap` si insertaste primero LISTO y luego RECIBIDO?
+  - Respuesta: Imprime `{RECIBIDO=5, LISTO=3}`.
+  - Justificación: `EnumMap` ordena sus claves según el orden natural de declaración en el enum, no según
+    el orden cronológico de inserción en el mapa.
+
+* Predicción 2 (Sesión 03): ¿Qué ocurre si ejecutas `Tamano.valueOf("Grande")`?
+  - Excepción: `IllegalArgumentException: No enum constant Tamano.Grande`.
+  - Justificación: `valueOf` es estrictamente sensible a mayúsculas y minúsculas; debe coincidir con `GRANDE`.
+
+3. SESIÓN 06: TALLER DE AUTOCOMPLETAR (Leche.java y Main.java)
+-------------------------------------------------------------------------------
+Banco de palabras disponible (12 palabras; 7 se usan, 5 sobran):
+[ class, default, ordinal, Leche, valueOf, switch, case, static, final, enum, recargo, values ]
+
+Espacios resueltos y justificación frase por frase:
+- Espacio 1: `enum` -> Declara el tipo enumerado `public enum Leche`.
+- Espacio 2: `final` -> Declara inmutable el campo `private final int recargo;`.
+- Espacio 3: `Leche` -> Constructor del enum `Leche(int recargo)`.
+- Espacio 4: `switch` -> Expresión switch `return switch (this) { ... };`.
+- Espacio 5: `default` -> Rama por defecto para leches no vegetales `default -> false;`.
+- Espacio 6: `values` -> Método estático para iterar sobre todas las constantes `Leche.values()`.
+- Espacio 7: `recargo` -> Invocación del método getter para imprimir el valor adicional `l.recargo()`.
+
+Preguntas de control:
+* Pregunta 1: ¿Por qué el switch del espacio 4 necesita default?
+  - Respuesta: Porque solo se listaron explícitamente `AVENA` y `ALMENDRAS`. Si no se pone `default`,
+    quedan sin cubrir `ENTERA` y `DESLACTOSADA` y el compilador rechaza el switch por no ser exhaustivo.
+* Pregunta 2: Si en el espacio 6 escribes `valueOf`, ¿qué error esperas?
+  - Respuesta: `method valueOf in enum Leche cannot be applied to given types; required: String`.
+
+4. SESIÓN 08: EVALUACIÓN DE COMPROBACIÓN (CUESTIONARIO COMPLETO)
+-------------------------------------------------------------------------------
+1. OPCIÓN MÚLTIPLE (Recordar · DOK 1):
+   Pregunta: ¿Qué método devuelve todas las constantes de un enum en orden?
+   - Opciones: a) values(), b) valueOf(), c) ordinal(), d) name().
+   - Respuesta correcta: a) values().
+   - Justificación: `values()` genera el arreglo estático con las constantes en orden de declaración.
+
+2. OPCIÓN MÚLTIPLE (Analizar · DOK 2):
+   Pregunta: `Tamano.valueOf("Grande")` lanza una excepción. ¿Por qué?
+   - Opciones: a) Falta new, b) El nombre debe coincidir exacto: GRANDE, c) valueOf solo acepta números, d) Los enums no tienen valueOf.
+   - Respuesta correcta: b) El nombre debe coincidir exacto: GRANDE.
+   - Justificación: `valueOf` exige coincidencia exacta con el identificador en mayúsculas.
+
+3. VERDADERO O FALSO (Comprender · DOK 1):
+   Afirmación: "Desde otra clase se puede crear un tamaño nuevo con new Tamano(600, 4000)."
+   - Respuesta: FALSO.
+   - Justificación: Los constructores de un enum son estrictamente privados; está prohibido instanciarlos
+     manualmente con `new`.
+
+4. RELACIONA (Comprender · DOK 2):
+   - `Tamano.GRANDE.ml()`       ---> 470
+   - `Tamano.MEDIANO.ordinal()`  ---> 1 (posición: 0 es PEQUENO, 1 es MEDIANO)
+   - `Tamano.PEQUENO.name()`     ---> "PEQUENO"
+   - `Tamano.values().length`    ---> 3
+
+5. ORDENA (Aplicar · DOK 2):
+   Orden de los estados que recorre un pedido:
+   - Orden: 1. RECIBIDO
+            2. EN_PREPARACION
+            3. LISTO
+            4. ENTREGADO
+
+6. RESPUESTA ABIERTA (Analizar · DOK 3):
+   Pregunta: Explica por qué agregar el estado CANCELADO hace que el switch de siguiente() deje de compilar, y por qué eso es bueno.
+   - Respuesta: Porque el switch es exhaustivo (no tiene `default`). El compilador detecta que `CANCELADO`
+     no tiene una flecha de transición definida y genera un error `the switch statement does not cover
+     all possible input values`. Esto es excelente para la arquitectura porque impide que un cambio
+     en el negocio introduzca comportamientos indefinidos silenciosos.
+
+7. RESPUESTA ABIERTA (Evaluar · DOK 3):
+   Pregunta: Martín quiere guardar los tamaños como 1, 2 y 3 en un archivo. ¿Qué le recomiendas?
+   - Respuesta: Desaconsejar totalmente usar números basados en `ordinal()`. Si más adelante se agrega
+     `EXTRA_GRANDE` o un tamaño intermedio `JUNIOR`, los ordinales de las constantes existentes cambiarán,
+     corrompiendo los registros guardados en los archivos. Es mucho más seguro guardar el `name()` ("GRANDE")
+     o un código alfanumérico explícito.
+
+8. RESPUESTA ABIERTA (Crear · DOK 3):
+   Pregunta: Escribe un enum MedioPago con un atributo comisionPct y un método neto(int valor).
+   - Respuesta: Implementado completamente en `MedioPago.java`.
+
+5. CIERRE DE METACOGNICIÓN Y MARCADOR
+-------------------------------------------------------------------------------
+- Semáforo: VERDE en tipos enumerados, métodos automáticos y exhaustividad de switch.
+- Insignia ganada: «Universo cerrado» (Estados bien modelados, switches exhaustivos y colecciones EnumMap probadas).

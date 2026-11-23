@@ -1,0 +1,64 @@
+===============================================================================
+CAFÉ SINTAXIS · NIVEL 03 DE 11: CONSTRUCTORES
+Título oficial: CONSTRUCTORES (Constructores y sobrecarga · Bebidas bien nacidas)
+Pregunta guía: ¿Cómo garantiza Java que un objeto nazca completo y válido desde el primer milisegundo?
+Ruta pedagógica: Bloom (Recordar -> Comprender -> Aplicar -> Analizar -> Evaluar -> Crear) | DOK 1 a 3
+===============================================================================
+
+1. DEFINICIONES FORMALES Y ESPECIFICACIÓN DEL LENGUAJE (JLS JAVA SE 25)
+-------------------------------------------------------------------------------
+* Constructor (Constructor Declarations - JLS §8.8):
+  Estructura especial de inicialización que lleva el MISMO nombre de la clase y CARECE de tipo de
+  retorno (incluso de `void`).
+  Se ejecuta automáticamente cuando se usa el operador `new` para inicializar el estado del objeto.
+
+* El Constructor por Defecto (Default Constructor - JLS §8.8.9):
+  Si una clase no declara ningún constructor explícito, el compilador genera automáticamente uno
+  público sin parámetros que no hace nada más que llamar a `super()`.
+  REGLA DE ORO: En el momento en que se escribe al menos un constructor con parámetros, el constructor
+  por defecto sin argumentos DESAPARECE. Por ello, llamar a `new Bebida()` deja de compilar a menos
+  que se declare explícitamente.
+
+* Campos `final` e Inmutabilidad:
+  Un atributo declarado como `final` debe recibir valor obligatoriamente en el constructor y, una
+  vez asignado, jamás puede ser modificado. Otorga inmutabilidad, seguridad ante hilos (thread-safety)
+  y previene efectos secundarios.
+
+* Delegación de Constructores con `this(...)` (JLS §8.8.7):
+  Un constructor puede invocar a otro constructor de la misma clase utilizando `this(...)` con
+  diferentes argumentos. Esto evita duplicar validaciones y código de inicialización.
+
+* Novedad de Java 25: Prólogo en Constructores (Flexible Constructor Bodies - JEP 513):
+  En versiones antiguas (Java 21 y anteriores), `this(...)` o `super(...)` debía ser estrictamente
+  la PRIMERÍSIMA línea del constructor.
+  Desde Java 25, se permite colocar sentencias antes de `this(...)` o `super(...)` (el "prólogo"),
+  siempre que no hagan referencia a `this` ni lean campos de instancia aún no inicializados.
+  Esto permite validar argumentos con `if (...) throw ...` antes de delegar al constructor canónico.
+
+* Sobrecarga de Métodos y Constructores (Overloading - JLS §8.4.9):
+  Capacidad de definir múltiples métodos o constructores con el mismo nombre dentro de la misma
+  clase, diferenciándose por su firma (distinto número, orden o tipos de parámetros).
+  El tipo de retorno NO permite sobrecargar; si dos métodos tienen la misma firma y distinto retorno,
+  el compilador emite un error.
+
+* Comparación de Cadenas de Texto:
+  Los objetos `String` deben compararse siempre mediante el método `.equals()` (compara el contenido
+  de los caracteres), jamás con el operador `==` (que compara igualdad de referencias de memoria).
+
+2. TABLA COMPARATIVA: CONSTRUCTOR FRENTE A MÉTODO COMÚN
+-------------------------------------------------------------------------------
+ASPECTO             CONSTRUCTOR                         MÉTODO
+-------------------------------------------------------------------------------
+Nombre              Idéntico al de la clase.            Cualquier identificador válido (un verbo).
+Tipo de Retorno     Ninguno (ni siquiera void).         Obligatorio (tipo primitivo, objeto o void).
+Momento de llamada  Una sola vez, al crear con `new`.   Tantas veces como se desee sobre el objeto.
+Propósito           Garantizar que el objeto nazca bien. Ejecutar comportamiento o consultar estado.
+Herencia            NO se heredan a las subclases.      Se heredan según modificadores de acceso.
+
+3. TABLA COMPARATIVA: JAVA 21 VS. JAVA 25 EN CONSTRUCTORES
+-------------------------------------------------------------------------------
+ASPECTO                 JAVA 21 O ANTERIOR                  JAVA 25 (JEP 513)
+-------------------------------------------------------------------------------
+Llamada a `this(...)`   Debe ser estrictamente la línea 1.  Puede tener código previo (el prólogo).
+Validar parámetros      Se obligaba a usar métodos auxiliares Se valida naturalmente con if y throw
+                        o validar dentro del constructor final. antes de llamar a this(...).

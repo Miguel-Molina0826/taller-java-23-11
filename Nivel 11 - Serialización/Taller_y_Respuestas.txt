@@ -1,0 +1,121 @@
+===============================================================================
+CAFÉ SINTAXIS · NIVEL 11: SERIALIZACIÓN
+SALIDAS DE CONSOLA, PREDICCIONES, TALLERES Y EVALUACIÓN RESUELTA
+===============================================================================
+
+1. SALIDA REAL DE CONSOLA AL EJECUTAR EL NIVEL 11
+-------------------------------------------------------------------------------
+$ java Main.java
+=== CAFÉ SINTAXIS · NIVEL 11: SERIALIZACIÓN MODERNA ===
+--- 1. Pruebas de Serialización de Bodega ---
+Al abrir la cafetería: []
+Guardado en disco: 204 bytes
+Leído de disco al día siguiente: [Insumo[id=1, nombre=Leche entera (L), cantidad=20], Insumo[id=2, nombre=Café en grano (kg), cantidad=5], Insumo[id=3, nombre=Avena orgánica (L), cantidad=8]]
+¿Objetos exactamente iguales en datos? true
+
+--- 2. Pruebas con Turno Serializable ---
+Turno registrado: Turno[barista=Martín, bebidas=45, propinas=15000]
+
+--- 3. Pruebas con Archivo de Reservas y CSV ---
+Reservas serializadas guardadas: [Reserva[id=1, cliente=Valeria, personas=4, hora=18:00], Reserva[id=2, cliente=Julián, personas=2, hora=19:30], Reserva[id=3, cliente=Carlos, personas=6, hora=20:00]]
+Reservas exportadas a CSV con éxito. Contenido:
+  id,cliente,personas,hora
+  1,Valeria,4,18:00
+  2,Julián,2,19:30
+  3,Carlos,6,20:00
+
+--- 4. Demostración de Seguridad con Filtro ---
+Rechazo de seguridad exitoso por filtro: filter status: REJECTED
+
+2. PREDICCIONES PRIMM (SESIÓN 03 Y 04)
+-------------------------------------------------------------------------------
+* Predicción 1 (Sesión 03): ¿Qué devuelve `almacen.cargar()` si el archivo `bodega.ser` no existe en disco?
+  - Respuesta: Devuelve una lista vacía `List.of()` sin arrojar ninguna excepción, permitiendo que el
+    sistema inicie limpiamente el primer día de operaciones.
+
+* Predicción 2 (Sesión 03): Si un archivo alterado contiene un insumo con `cantidad = -3`, ¿qué pasa al leer?
+  - Excepción: `IllegalArgumentException: Cantidad negativa: -3`.
+  - Justificación: Como `Insumo` es un record, su deserialización pasa obligatoriamente por el
+    constructor canónico y ejecuta el constructor compacto, detectando y bloqueando el dato corrupto.
+
+3. SESIÓN 06: TALLER DE AUTOCOMPLETAR (Turno.java y Main.java)
+-------------------------------------------------------------------------------
+Banco de palabras disponible (12 palabras; 7 se usan, 5 sobran):
+[ Serializable, record, Turno, Cloneable, writeObject, readObject, try, catch, final, class, ObjectOutputStream, Files ]
+
+Espacios resueltos y justificación frase por frase:
+- Espacio 1: `Serializable` -> Interfaz requerida `import java.io.Serializable;`.
+- Espacio 2: `record` -> Declara el record `public record Turno(...)`.
+- Espacio 3: `implements Serializable` -> Marca la clase como apta para serialización.
+- Espacio 4: `try` -> Sentencia `try-with-resources` para la apertura de flujos.
+- Espacio 5: `ObjectOutputStream` -> Flujo de escritura de objetos a bytes.
+- Espacio 6: `writeObject` -> Método que codifica y escribe el objeto en el archivo.
+- Espacio 7: `readObject` -> Método que lee y decodifica el objeto desde el archivo.
+
+Preguntas de control:
+* Pregunta 1: ¿Por qué la interfaz Serializable no tiene ningún método?
+  - Respuesta: Es una "interfaz marcadora" (marker interface). Su presencia solo sirve para informarle
+    al motor de ejecución de Java que los autores de la clase dan su consentimiento explícito para que
+    el estado interno del objeto sea inspeccionado y serializado a disco.
+
+4. SESIÓN 08: EVALUACIÓN DE COMPROBACIÓN (CUESTIONARIO COMPLETO)
+-------------------------------------------------------------------------------
+1. OPCIÓN MÚLTIPLE (Recordar · DOK 1):
+   Pregunta: ¿Qué interfaz debe implementar un record para guardarse con ObjectOutputStream?
+   - Opciones: a) Comparable, b) Serializable, c) AutoCloseable, d) Cloneable.
+   - Respuesta correcta: b) Serializable.
+   - Justificación: Requisito indispensable del subsistema de serialización de Java.
+
+2. OPCIÓN MÚLTIPLE (Analizar · DOK 2):
+   Pregunta: Aparece "InvalidClassException: filter status: REJECTED". ¿Qué pasó?
+   - Opciones: a) El disco está lleno, b) El archivo trae una clase que no está en la lista blanca, c) Falta Serializable en String, d) El archivo está vacío.
+   - Respuesta correcta: b) El archivo trae una clase que no está en la lista blanca.
+   - Justificación: El `ObjectInputFilter` interceptó la lectura de una clase no autorizada por el patrón `!*` y la rechazó por seguridad.
+
+3. VERDADERO O FALSO (Comprender · DOK 1):
+   Afirmación: "Al deserializar un record, Java usa su constructor canónico, así que la validación vuelve a correr."
+   - Respuesta: VERDADERO.
+   - Justificación: Es una de las mejoras fundamentales de seguridad de los records introducidas en Java moderno.
+
+4. RELACIONA (Comprender · DOK 2):
+   - `writeObject`     ---> Objetos a bytes.
+   - `readObject`      ---> Bytes a objetos.
+   - `try (var ...)`   ---> Cierra el flujo solo al finalizar.
+   - `!* en el filtro` ---> Rechaza todo lo demás en la lista blanca.
+
+5. ORDENA (Aplicar · DOK 2):
+   Pasos de cargar() con seguridad:
+   - Orden: 1. Revisar si el archivo existe.
+            2. Abrir el ObjectInputStream en un try con recursos.
+            3. Poner el filtro de clases permitidas.
+            4. Leer el objeto con readObject().
+            5. Devolver la lista.
+
+6. RESPUESTA ABIERTA (Analizar · DOK 3):
+   Pregunta: Explica por qué el archivo con cantidad -3 se rechazó al leer, aunque nadie llamó a new Insumo en ese programa.
+   - Respuesta: Porque la especificación de deserialización de records establece que la JVM nunca crea records
+     mediante magia de reflexión sin invocar constructores. El mecanismo de deserialización extrae los
+     valores de los componentes desde los bytes y los pasa directamente como argumentos al constructor
+     canónico. El constructor compacto se ejecuta automáticamente y dispara `IllegalArgumentException`.
+
+7. RESPUESTA ABIERTA (Evaluar · DOK 3):
+   Pregunta: Valeria quiere mandar la bodega a su proveedor, que usa otro lenguaje. ¿.ser o .csv?
+   - Respuesta: Formato `.csv`. El archivo `.ser` es un formato binario propietario exclusivo de la JVM de
+     Java que no puede ser leído nativamente por sistemas externos sin herramientas especializadas y
+     conlleva riesgos de seguridad. El archivo `.csv` es un estándar universal de texto plano interoperable
+     con cualquier lenguaje de programación, hoja de cálculo o base de datos.
+
+8. RESPUESTA ABIERTA (Crear · DOK 3):
+   Pregunta: Escribe el filtro y la lectura para un archivo que solo debe traer un record Turno.
+   - Respuesta:
+     ```java
+     try (var in = new ObjectInputStream(Files.newInputStream(Path.of("turno.ser")))) {
+         in.setObjectInputFilter(ObjectInputFilter.Config.createFilter("Turno;!*"));
+         Turno t = (Turno) in.readObject();
+     }
+     ```
+
+5. CIERRE DE METACOGNICIÓN Y MARCADOR
+-------------------------------------------------------------------------------
+- Semáforo: VERDE en serialización moderna, NIO.2, filtros de lista blanca y exportación CSV.
+- Insignia ganada: «Memoria de hierro» (Persistencia robusta, validación garantizada y seguridad infranqueable).

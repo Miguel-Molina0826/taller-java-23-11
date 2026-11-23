@@ -1,0 +1,49 @@
+===============================================================================
+CAFÉ SINTAXIS · NIVEL 11 DE 11: SERIALIZACIÓN
+Título oficial: SERIALIZACIÓN (Serialización moderna con archivos · La cafetería recuerda)
+Pregunta guía: ¿Cómo guarda Java el estado de la cafetería en disco para recordarlo al día siguiente sin abrir brechas de seguridad?
+Ruta pedagógica: Bloom (Recordar -> Comprender -> Aplicar -> Analizar -> Evaluar -> Crear) | DOK 1 a 3
+===============================================================================
+
+1. DEFINICIONES FORMALES Y ESPECIFICACIÓN DEL LENGUAJE (JLS Y JAVA SE 25 I/O)
+-------------------------------------------------------------------------------
+* Qué es la Serialización de Objetos (Object Serialization):
+  Proceso de codificar un grafo de objetos vivos en memoria en un flujo secuencial de bytes
+  (marshalling), permitiendo almacenarlo en archivos persistentes o transmitirlo a través de la red.
+  La operación inversa, Deserialización, reconstruye el grafo de objetos en memoria a partir de los bytes.
+
+* La Interfaz Marcadora `java.io.Serializable`:
+  Una interfaz sin métodos (marker interface). Declara formalmente que los objetos de una clase
+  tienen permiso para ser convertidos en bytes mediante `ObjectOutputStream`.
+  Si una clase intenta serializarse sin implementar `Serializable`, la JVM arroja de inmediato
+  `java.io.NotSerializableException`.
+
+* Serialización Tradicional frente a Serialización Moderna (Java 25):
+  La serialización original de Java (1997) sufría de graves problemas de diseño:
+  - Creaba objetos mutables en memoria sin llamar a los constructores (eludiendo las validaciones).
+  - Aceptaba cualquier clase presente en el flujo de bytes, permitiendo ataques de deserialización
+    maliciosa (Remote Code Execution vía "gadget chains").
+  En Java moderno (Java 25), la serialización se realiza bajo estándares estrictos:
+  1. Uso de `record` para los datos: Al deserializar un record, Java OBLIGA a ejecutar el constructor
+     canónico, garantizando que todas las invariantes y validaciones del constructor compacto vuelvan
+     a ejecutarse antes de crear la instancia en memoria.
+  2. Manejo de archivos con Java NIO.2: `Path.of(...)`, `Files.newInputStream` y `Files.newOutputStream`.
+  3. Gestión segura de recursos con `try-with-resources`: Cierra automáticamente los flujos de I/O al
+     salir del bloque, incluso si ocurre una excepción, evitando fugas de descriptores de archivo.
+  4. Filtros de Deserialización (`ObjectInputFilter` - JEP 290):
+     Permite definir una lista blanca estricta de clases autorizadas para ser leídas del archivo.
+     Cualquier clase externa no declarada se rechaza tajantemente antes de ser cargada en la JVM.
+
+* Anatomía de un Filtro de Lista Blanca Seguro:
+  `"Insumo;java.util.ArrayList;java.lang.Object;!*"`
+  - Se evalúa de izquierda a derecha; la primera coincidencia decide el destino.
+  - `Insumo`: Permite la clase del negocio.
+  - `java.util.ArrayList`: Permite la lista contenedora.
+  - `java.lang.Object`: Permite el arreglo interno de referencias de la lista.
+  - `!*`: Rechaza explícitamente cualquier otra clase existente en el universo de Java.
+    Si un archivo corrupto o manipulado contiene otra clase, se aborta con `InvalidClassException`.
+
+* Alternativas Estructuradas Legibles: CSV y Texto Plano
+  Para intercambiar información con clientes, contabilidad u otros lenguajes de programación,
+  la persistencia binaria (.ser) es inapropiada por ser exclusiva de Java. Se utiliza texto plano
+  como CSV mediante las APIs modernas `Files.write(path, lineas)` y `Files.readAllLines(path)`.

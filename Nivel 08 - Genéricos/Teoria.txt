@@ -1,0 +1,59 @@
+===============================================================================
+CAFÉ SINTAXIS · NIVEL 08 DE 11: GENÉRICOS
+Título oficial: GENÉRICOS (Tipos genéricos (generics) · Un repositorio para todo)
+Pregunta guía: ¿Cómo escribe Java un algoritmo o una clase que sirva para cualquier tipo sin perder la seguridad de tipos?
+Ruta pedagógica: Bloom (Recordar -> Comprender -> Aplicar -> Analizar -> Evaluar -> Crear) | DOK 1 a 3
+===============================================================================
+
+1. DEFINICIONES FORMALES Y ESPECIFICACIÓN DEL LENGUAJE (JLS JAVA SE 25)
+-------------------------------------------------------------------------------
+* Tipos Genéricos (Generic Types - JLS §8.1.2):
+  Clase o interfaz que tiene uno o más parámetros de tipo formales delimitados por corchetes angulares:
+  `public class Repositorio<T> { ... }`
+  Los genéricos permiten parametrizar tipos: un único código fuente puede operar sobre `Producto`,
+  `Cliente`, `Integer` o `String` de manera completamente segura.
+
+* Beneficios según la Documentación Oficial de Java:
+  1. Revisión fuerte de tipos en tiempo de compilación (Strong type checking at compile-time):
+     Los errores de incompatibilidad de tipos se detectan al compilar, no cuando la aplicación está
+     corriendo en producción.
+  2. Eliminación de Casts explícitos:
+     Antes de Java 5, sacar un elemento de una lista requería `(Producto) lista.get(0);`. Si el tipo
+     no era el esperado, arrojaba la temida `ClassCastException`. Con genéricos, el compilador inserta
+     la conversión de forma transparente y segura.
+  3. Reutilización de algoritmos genéricos sin duplicar código.
+
+* El Operador Diamante `<>` (Type Inference - JLS §15.9.3):
+  Permite omitir los argumentos de tipo en la llamada al constructor cuando el compilador puede
+  inferirlos del contexto: `new ArrayList<>()` en vez de `new ArrayList<Producto>()`.
+
+* Límites Superiores Acotados (Bounded Type Parameters - JLS §4.4):
+  Sintaxis: `<T extends Identificable>`
+  Restringe los tipos que pueden sustituir a `T`: solo se aceptan clases que implementen o extiendan
+  `Identificable`.
+  VENTAJA CRUCIAL: Dentro de la clase `Repositorio<T>`, el código puede invocar con total tranquilidad
+  los métodos definidos en la interfaz (`item.id()`). Sin el límite, Java solo permitiría invocar los
+  métodos de `Object`.
+
+* Comodines y Regla PECS (Wildcards - JLS §4.5.1):
+  - Invarianza: En Java, `List<Bebida>` NO es subtipo de `List<Producto>`, aunque `Bebida` extienda de
+    `Producto`. Si lo permitiera, se podría insertar un `Brownie` en una lista pensada para bebidas.
+  - Comodín de límite superior: `List<? extends Producto>`.
+    Permite aceptar listas de `Producto`, `Bebida` o `Postre`. Es un productor de datos (solo lectura segura):
+    se pueden leer elementos como `Producto`, pero el compilador impide agregar nuevos elementos (`add`).
+  - Principio PECS (Joshua Bloch): Producer Extends, Consumer Super. Si solo lees datos, usa `? extends`;
+    si solo insertas datos, usa `? super`.
+
+* Borrado de Tipos (Type Erasure - JLS §4.6):
+  Los genéricos existen únicamente en tiempo de compilación para garantizar la seguridad. Al generar el
+  bytecode, el compilador reemplaza `T` por su límite (`Identificable` u `Object`) y descarta la
+  información de tipos genéricos para mantener compatibilidad hacia atrás con versiones antiguas de Java.
+
+2. TABLA COMPARATIVA: CÓDIGO CRUDO (RAW) VS. CÓDIGO GENÉRICO
+-------------------------------------------------------------------------------
+ASPECTO             CÓDIGO VIEJO (RAW TYPES)            CÓDIGO MODERNO CON GENÉRICOS
+-------------------------------------------------------------------------------
+Declaración         `List items = new ArrayList();`     `List<Producto> items = new ArrayList<>();`
+Inserción           Acepta cualquier Object (mezclas).  Solo acepta el tipo especificado `Producto`.
+Recuperación        Exige casteo explícito `(Producto)`.Directa sin casts: `Producto p = items.get(0);`
+Detección de error  En ejecución: `ClassCastException`. En compilación: error inmediato en el editor.

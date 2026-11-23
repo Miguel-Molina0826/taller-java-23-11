@@ -1,0 +1,57 @@
+===============================================================================
+CAFÉ SINTAXIS · NIVEL 06 DE 11: ENUM
+Título oficial: ENUM (Tipos enumerados (enum) · Tamaños y estados)
+Pregunta guía: ¿Cómo evita Java que alguien pida un vaso «gigante» o que un pedido quede en un estado que no existe?
+Ruta pedagógica: Bloom (Recordar -> Comprender -> Aplicar -> Analizar -> Evaluar -> Crear) | DOK 1 a 3
+===============================================================================
+
+1. DEFINICIONES FORMALES Y ESPECIFICACIÓN DEL LENGUAJE (JLS JAVA SE 25)
+-------------------------------------------------------------------------------
+* Tipo Enumerado (Enum Declarations - JLS §8.9):
+  Tipo especial de clase en Java que define un conjunto cerrado, fijo e inmutable de constantes
+  con nombre.
+  Hereda de manera implícita de `java.lang.Enum<E>` y no puede extender ninguna otra clase
+  (aunque sí puede implementar interfaces).
+  A diferencia de lenguajes como C/C++, en Java los enums no son simples enteros (ints disfrazados);
+  son clases con seguridad de tipos de primera clase (Type-Safe Enums).
+
+* Métodos Provistos de Fábrica en todo Enum (JLS §8.9.3):
+  1. `values()`: Devuelve un arreglo que contiene todas las constantes del enum en el orden exacto
+     en que fueron declaradas.
+  2. `valueOf(String name)`: Retorna la constante que coincide exactamente con el texto suministrado.
+     Si el texto no coincide o tiene mayúsculas/minúsculas diferentes, arroja `IllegalArgumentException`.
+  3. `name()`: Devuelve el nombre exacto de la constante como `String`.
+  4. `ordinal()`: Devuelve la posición numérica de la constante (empezando en 0).
+     ADVERTENCIA DE DISEÑO: No usar `ordinal()` para reglas de negocio ni para guardar en base de
+     datos, ya que si un desarrollador reordena o inserta una constante en el código, los números
+     cambian y se corrompe la información.
+
+* Enums con Campos y Métodos (Rich Enums):
+  Un enum puede contener atributos `final`, constructores (implícitamente privados) y métodos.
+  Cada constante llama al constructor al momento de inicializar la clase.
+  Ejemplo: `PEQUENO(240, 0)`, donde 240 es el volumen en ml y 0 es el recargo en pesos.
+
+* Switch de Flechas Moderno y Exhaustividad (Switch Expressions - JLS §14.11):
+  El switch de flechas (`case A -> ...`) evalúa una expresión y retorna un valor de forma limpia.
+  Cuando se aplica sobre un enum, el compilador verifica la EXHAUSTIVIDAD (Exhaustiveness):
+  Si se cubren todas las constantes declaradas en el enum, el compilador NO exige rama `default`.
+  Si en el futuro alguien añade una nueva constante (ej. `CANCELADO`) y no actualiza el switch,
+  el código NO compila, alertando inmediatamente del error antes de salir a producción.
+
+* Colecciones Especializadas: `EnumMap` y `EnumSet` (java.util):
+  - `EnumMap`: Implementación de `Map` cuyas llaves son constantes de un enum. Es internamente un
+    arreglo plano compacto, ofreciendo operaciones más rápidas y menor consumo de memoria que `HashMap`,
+    manteniendo siempre las llaves en el orden natural de declaración del enum.
+  - `EnumSet`: Implementación de `Set` para enums basada internamente en máscaras de bits (bit vector),
+    extremadamente eficiente y veloz.
+
+2. TABLA COMPARATIVA: TEXTO LIBRE VS. CONSTANTES INT VS. ENUM
+-------------------------------------------------------------------------------
+OPCIÓN              EJEMPLO                 RIESGO O VENTAJA
+-------------------------------------------------------------------------------
+Texto libre         `"grande"`              Errores tipográficos ("Grande", "grnde") indetectables
+                                            hasta que la aplicación falla en ejecución.
+Constantes int      `public static final    No tiene seguridad de tipos; se puede pasar 9999 o -1.
+                    int GRANDE = 3;`        Al imprimir solo muestra "3" (poco legible).
+enum                `Tamano.GRANDE`         Seguridad absoluta al compilar; imprime "GRANDE"; solo
+                                            permite valores predefinidos válidos.

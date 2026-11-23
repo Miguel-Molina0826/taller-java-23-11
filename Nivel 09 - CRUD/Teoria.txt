@@ -1,0 +1,51 @@
+===============================================================================
+CAFÉ SINTAXIS · NIVEL 09 DE 11: CRUD
+Título oficial: CRUD (Colecciones y operaciones CRUD · El inventario de la barra)
+Pregunta guía: ¿Cómo organiza Java en memoria la bodega de la cafetería para crear, buscar, cambiar y borrar insumos sin perder nada?
+Ruta pedagógica: Bloom (Recordar -> Comprender -> Aplicar -> Analizar -> Evaluar -> Crear) | DOK 1 a 3
+===============================================================================
+
+1. DEFINICIONES FORMALES Y ESPECIFICACIÓN DEL LENGUAJE (JLS Y JAVA SE 25 API)
+-------------------------------------------------------------------------------
+* Acrónimo CRUD:
+  Las cuatro operaciones esenciales de almacenamiento y gestión de información persistente:
+  - C · Create (Crear): Agregar un nuevo registro al sistema (`add()`).
+  - R · Read (Leer/Consultar): Obtener registros completos o buscar por un identificador (`get()`, `buscar()`).
+  - U · Update (Actualizar): Modificar el estado de un registro existente (`setCantidad()`).
+  - D · Delete (Eliminar): Remover un registro del sistema (`removeIf()`).
+
+* Colección `ArrayList` (java.util.ArrayList):
+  Estructura de datos basada en un arreglo dinámico redimensionable en memoria contigua.
+  - Complejidad Temporal:
+    * Acceso por índice directo `get(i)`, `getFirst()`, `getLast()`: Tiempo constante O(1).
+    * Búsqueda por atributo (ej. ID o nombre): Tiempo lineal O(n); recorre elemento por elemento.
+    * Inserción al final `add(item)`: Tiempo constante amortizado O(1).
+    * Eliminación `remove()` o `removeIf()`: Tiempo lineal O(n) debido al desplazamiento de elementos en memoria.
+
+* La Clase Contenedora `Optional<T>` (java.util.Optional):
+  Contenedor que puede contener un valor no nulo o estar vacío.
+  - Propósito: Representar explícitamente en el tipo de retorno que la búsqueda puede no arrojar resultados.
+  - Elimina el retorno de `null` y previene el error más común de la industria: `NullPointerException`.
+  - Métodos clave:
+    * `Optional.of(valor)`: Crea un Optional con el objeto encontrado.
+    * `Optional.empty()`: Retorna un contenedor vacío.
+    * `isPresent()`: Retorna true si hay un valor adentro.
+    * `isEmpty()`: Retorna true si está vacío.
+    * `orElseThrow()`: Extrae el valor si existe, o lanza `NoSuchElementException` si está vacío.
+
+* Copias Defensivas Inmutables (`List.copyOf` - Java 10+):
+  `List.copyOf(insumos)` retorna una vista inmutable (unmodifiable) que no puede ser alterada
+  desde el exterior. Si alguien intenta hacer `inv.listar().add(...)`, la JVM arroja de inmediato
+  `UnsupportedOperationException`. Esto protege la integridad del estado interno del inventario.
+
+* Expresiones Lambda y `removeIf`:
+  `insumos.removeIf(i -> i.getId() == id);`
+  Permite eliminar elementos evaluando un predicado de forma atómica y segura, evitando las
+  peligrosas excepciones `ConcurrentModificationException` que ocurren al borrar dentro de un `for-each` tradicional.
+
+* Colecciones Secuenciadas (Sequenced Collections - JEP 431 / Java 21+):
+  Métodos uniformes para acceder a los extremos de una colección con orden de encuentro:
+  `lista.getFirst()` y `lista.getLast()`.
+
+* Entrada interactiva por consola moderna:
+  `IO.readln("Opción › ")` disponible en Java 25 para capturar entradas del usuario limpiamente.

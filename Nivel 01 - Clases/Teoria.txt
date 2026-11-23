@@ -1,0 +1,87 @@
+===============================================================================
+CAFÉ SINTAXIS · NIVEL 01 DE 11: CLASES
+Título oficial: CLASES (Clases, métodos y atributos · El menú cobra vida)
+Pregunta guía: ¿Cómo convierte Java la ficha de un producto en objetos que saben su precio y se venden solos?
+Ruta pedagógica: Bloom (Recordar -> Comprender -> Aplicar -> Analizar -> Evaluar -> Crear) | DOK 1 a 3
+===============================================================================
+
+1. DEFINICIONES FORMALES Y ESPECIFICACIÓN DEL LENGUAJE (JLS JAVA SE 25)
+-------------------------------------------------------------------------------
+* Clase (Class Declaration - JLS Cap. 8):
+  «Una declaración de clase define una clase nueva y describe cómo está implementada.»
+  (JLS: "A class declaration defines a new class and describes how it is implemented.")
+  En Programación Orientada a Objetos, una clase representa la abstracción de una entidad del
+  dominio del negocio (el molde o plantilla). En ella se declaran qué datos mantendrá cada objeto
+  y qué operaciones o algoritmos podrá ejecutar.
+
+* Atributo o Campo (Field Declaration - JLS §8.3):
+  «Las variables de una clase se introducen mediante declaraciones de campo.»
+  (JLS: "The variables of a class are introduced by field declarations.")
+  Representa el estado que cada objeto conoce sobre sí mismo (variables de instancia). Cada instancia
+  posee su propia copia independiente de los atributos. Si no se les asigna un valor inicial:
+  - Los tipos numéricos primitivos (byte, short, int, long, float, double) inician en 0.
+  - Los tipos boolean inician en false.
+  - Las referencias a objetos (como String) inician en null.
+
+* Método (Method Declaration - JLS Cap. 8):
+  «Las declaraciones de métodos describen código que puede invocarse mediante expresiones de
+  invocación de métodos.»
+  (JLS: "Method declarations describe code that may be invoked by method invocation expressions.")
+  Representa el comportamiento: lo que cada objeto sabe hacer.
+  - Firma de un método (Method Signature): está compuesta exclusivamente por el nombre del método
+    y la lista ordenada de los tipos de sus parámetros. El tipo de retorno NO forma parte de la firma.
+  - Tipo de retorno: el tipo de dato que el método entrega a quien lo invoca mediante la instrucción
+    `return`. Si el método solo realiza una acción y no entrega datos, su tipo de retorno es `void`.
+
+* Objeto o Instancia:
+  Una copia concreta y viva creada en memoria dinámica (Heap) a partir de la clase utilizando el
+  operador `new`. El operador `new` reserva la memoria, inicializa los campos y retorna una referencia
+  (puntero seguro administrado por la JVM) que se almacena en una variable.
+
+2. ANALOGÍA REFLEXIVA DEL DOMINIO: CAFÉ SINTAXIS
+-------------------------------------------------------------------------------
+- Clase Producto: Es la ficha técnica del producto en la carta o menú de la cafetería. Describe que
+  todo producto debe tener un nombre, un precio y una cantidad disponible (stock).
+- Objeto (Instancia): Es el café servido físicamente en una mesa específica (ej. un Latte servido a
+  las 9:00 AM) o el trozo de Brownie en la vitrina. Aunque ambos provienen del mismo molde `Producto`,
+  el Latte sabe que cuesta $9500 y el Brownie sabe que cuesta $7000. Son independientes en memoria.
+
+3. TABLA COMPARATIVA: CLASE VS. OBJETO
+-------------------------------------------------------------------------------
+ASPECTO             CLASE                               OBJETO (INSTANCIA)
+-------------------------------------------------------------------------------
+Qué es              El molde / la descripción formal.   Una copia concreta creada en el Heap con new.
+Cuántos existen     Una sola declaración por archivo.   Todos los que el negocio necesite instanciar.
+Datos               Declara los atributos y sus tipos.  Almacena sus propios valores concretos de estado.
+Ubicación física    Archivo .java compilado a .class.   Reside en la memoria dinámica (Heap) en ejecución.
+Ejemplo en código   `public class Producto`             `Producto latte = new Producto();`
+
+4. ANATOMÍA Y ESTRUCTURA DE UN MÉTODO
+-------------------------------------------------------------------------------
+Ejemplo: `int vender(int cantidad) { ... }`
+- Tipo de retorno (`int`): Lo que el método entrega a la caja registradora (total cobrado).
+- Nombre (`vender`): Un verbo representativo de la acción.
+- Parámetro (`int cantidad`): El insumo que recibe el método para hacer su trabajo.
+- Cuerpo (`{ ... }`): El conjunto de instrucciones y reglas de negocio.
+- Firma: `vender(int)`.
+
+5. CARACTERÍSTICAS DE JAVA 25 EN ESTE NIVEL
+-------------------------------------------------------------------------------
+- Clases implícitamente declaradas y método principal compacto (JEP):
+  `void main()` sin la ceremonia de `public static void main(String[] args)`.
+- Paquete de entrada/salida simplificado:
+  `IO.println(...)` e `IO.readln(...)` disponibles automáticamente sin necesidad de importar
+  `java.util.Scanner` ni escribir `System.out.println`.
+- Ejecución directa en consola:
+  El comando `java Main.java` compila en memoria y ejecuta el programa sin generar archivos .class
+  manuales previos.
+
+6. CONEXIÓN CON LA INDUSTRIA Y JUSTIFICACIÓN TÉCNICA (SESIÓN 05)
+-------------------------------------------------------------------------------
+- Índice TIOBE y Encuestas (Stack Overflow): Java se mantiene entre los 4 lenguajes más utilizados
+  en el mundo profesional por su robustez, seguridad de tipos y rendimiento.
+- Java 25 LTS: Versión con soporte extendido a largo plazo (Long Term Support, mínimo 8 años).
+  Las empresas eligen versiones LTS porque aseguran estabilidad de APIs, parches de seguridad
+  críticos continuos y previsibilidad en costos de infraestructura empresarial.
+- Módulo `java.base`: Contiene más de 7400 clases que conforman los cimientos del lenguaje;
+  en Java la Programación Orientada a Objetos es el paradigma central.

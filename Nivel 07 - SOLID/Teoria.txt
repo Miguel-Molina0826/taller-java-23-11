@@ -1,0 +1,64 @@
+===============================================================================
+CAFÉ SINTAXIS · NIVEL 07 DE 11: SOLID
+Título oficial: SOLID (Principios SOLID · La caja registradora limpia)
+Pregunta guía: ¿Cómo escribir código que acepte cambios del negocio sin romperse ni exigir reescribirlo todo?
+Ruta pedagógica: Bloom (Recordar -> Comprender -> Aplicar -> Analizar -> Evaluar -> Crear) | DOK 1 a 3
+===============================================================================
+
+1. DEFINICIONES FORMALES Y ENUNCIADOS DE LOS 5 PRINCIPIOS SOLID
+-------------------------------------------------------------------------------
+Los principios SOLID (compilados por Robert C. Martin - Uncle Bob) son guías fundamentales
+de arquitectura para crear software mantenible, testeable y extensible:
+
+* S · Responsabilidad Única (Single Responsibility Principle - SRP):
+  «Una clase debe tener una, y solo una, razón para cambiar.»
+  (Robert C. Martin, 2014)
+  Pregunta clave para tu código: ¿Cuántas personas o roles del negocio podrían pedirme cambiar esta clase?
+  En Café Sintaxis:
+  - `Totales`: Solo cambia si cambia la matemática de suma de ventas.
+  - `Ticket`: Solo cambia si el diseñador cambia el texto visual de la factura.
+  - `Caja`: Solo orquesta la transacción comercial.
+
+* O · Abierto / Cerrado (Open / Closed Principle - OCP):
+  «Las entidades de software deben estar abiertas a la extensión, pero cerradas a la modificación.»
+  (Bertrand Meyer / Robert C. Martin, 2000)
+  Pregunta clave: ¿Una promoción nueva me obliga a editar código que ya funciona y está en producción?
+  En Café Sintaxis: La interfaz `Descuento` permite crear `Porcentaje`, `Fidelidad` o `HoraFeliz`
+  sin tocar un solo condicional `if-else` dentro de `Caja`.
+
+* L · Sustitución de Liskov (Liskov Substitution Principle - LSP):
+  «Las subclases o implementaciones deben poder sustituir a sus tipos base sin alterar la corrección
+  del programa.»
+  (Barbara Liskov, 1988 / Martin, 2000)
+  Pregunta clave: ¿Alguna implementación rompe las expectativas o promesas del contrato?
+  En Café Sintaxis: El contrato de descuento promete rebajar el precio pero jamás entregar un cobro
+  negativo. La clase `Fidelidad` inicial restaba 2000 a secas, dejando compras de 1500 en -$500.
+  Al aplicar `Math.max(0, total - 2000)`, se restaura la sustitución de Liskov.
+
+* I · Segregación de Interfaces (Interface Segregation Principle - ISP):
+  «Muchas interfaces específicas son mejores que una sola interfaz general e inflada.»
+  (Robert C. Martin, 2000)
+  Pregunta clave: ¿Obligo a una clase a implementar métodos que no usa?
+  En Café Sintaxis: La interfaz `Notificador` solo pide `enviar(destino, mensaje)`. No mezcla
+  métodos de impresión en papel ni facturación electrónica.
+
+* D · Inversión de Dependencias (Dependency Inversion Principle - DIP):
+  «Los módulos de alto nivel no deben depender de módulos de bajo nivel; ambos deben depender
+  de abstracciones. Las abstracciones no deben depender de los detalles; los detalles deben
+  depender de las abstracciones.»
+  (Robert C. Martin, 2000)
+  Pregunta clave: ¿Creo con `new` los detalles dentro de la clase o los recibo por el constructor?
+  En Café Sintaxis: `Caja` recibe `Notificador` por su constructor (Inyección de Dependencias).
+  `Caja` desconoce si el mensaje va a un celular real (`SmsSimulado`) o a una lista de pruebas
+  (`NotificadorMemoria`).
+
+2. QUÉ ES UNA REFACTORIZACIÓN SEGURA
+-------------------------------------------------------------------------------
+Refactorizar es alterar la estructura interna del software para hacerlo más comprensible y fácil
+de modificar, SIN alterar su comportamiento observable externo (Martin Fowler).
+Pasos para refactorizar con seguridad:
+1. Guardar la salida actual exacta del programa.
+2. Escribir pruebas que capturen esa salida.
+3. Separar una responsabilidad a la vez hacia una nueva clase o interfaz.
+4. Inyectar la dependencia.
+5. Ejecutar y comparar que la salida siga siendo milimétricamente idéntica.

@@ -1,0 +1,118 @@
+===============================================================================
+CAFÉ SINTAXIS · NIVEL 08: GENÉRICOS
+SALIDAS DE CONSOLA, PREDICCIONES, TALLERES Y EVALUACIÓN RESUELTA
+===============================================================================
+
+1. SALIDA REAL DE CONSOLA AL EJECUTAR EL NIVEL 08
+-------------------------------------------------------------------------------
+$ java Main.java
+=== CAFÉ SINTAXIS · NIVEL 08: GENÉRICOS ===
+--- 1. Pruebas con Repositorio Genérico Acotado ---
+Brownie $7000
+Sofía
+
+--- 2. Pruebas con Métodos Genéricos y Comodines (? extends) ---
+Última bebida: moka
+Total vitrina: $14500
+
+--- 3. Pruebas con Bandeja Genérica ---
+¿Bandeja vacía? false
+Tomando: Croissant caliente
+Tomando: Latte mediano
+¿Bandeja vacía ahora? true
+
+--- 4. Pruebas con Historial con Límite de Capacidad ---
+Cobros en historial (últimos 3): [7000, 12000, 3500]
+Más reciente: $3500
+Mayor cobro: $12000
+Suma total de cobros con comodín: $22500
+
+--- 5. Pruebas de primeros() y contar() ---
+Veces que pidieron Latte: 3
+Primeros 2 pedidos: [Latte, Tinto]
+
+2. PREDICCIONES PRIMM (SESIÓN 03 Y 04)
+-------------------------------------------------------------------------------
+* Predicción 1 (Sesión 03): ¿Por qué `new Repositorio<String>()` no compila?
+  - Mensaje del compilador:
+    `type argument java.lang.String is not within bounds of type-variable T`
+  - Justificación: `Repositorio<T extends Identificable>` exige que el tipo implemente `Identificable`.
+    La clase `String` del JDK no implementa dicha interfaz.
+
+* Predicción 2 (Sesión 04): Al agregar un 4to elemento a un Historial de capacidad 3:
+  - Respuesta: El elemento más antiguo en la posición 0 (`9500`) es removido con `removeFirst()`.
+    El historial conserva los últimos tres: `[7000, 12000, 3500]`.
+
+3. SESIÓN 06: TALLER DE AUTOCOMPLETAR (Bandeja.java y Main.java)
+-------------------------------------------------------------------------------
+Banco de palabras disponible (12 palabras; 7 se usan, 5 sobran):
+[ <T>, T, String, new ArrayList<>(), items.add(item), items.removeLast(), boolean, int, Object, List, void, extends ]
+
+Espacios resueltos y justificación frase por frase:
+- Espacio 1: `<T>` -> Declara el parámetro de tipo genérico en `public class Bandeja<T>`.
+- Espacio 2: `new ArrayList<>()` -> Inicializa la lista interna usando el operador diamante.
+- Espacio 3: `T` -> Tipo del parámetro en `public void poner(T item)`.
+- Espacio 4: `items.add(item)` -> Almacena el elemento genérico en la colección.
+- Espacio 5: `T` -> Tipo de retorno del método `public T tomar()`.
+- Espacio 6: `items.removeLast()` -> Remueve y entrega el último elemento apilado.
+- Espacio 7: `boolean` -> Tipo de retorno del método `public boolean vacia()`.
+
+Preguntas de control:
+* Pregunta 1: ¿Por qué en Bandeja no se usó `<T extends Identificable>`?
+  - Respuesta: Porque una bandeja de cafetería sirve para transportar cualquier elemento (pocillos, platos,
+    dinero, notas); no necesita interactuar con identificadores ni invocar métodos específicos de sus ítems.
+
+4. SESIÓN 08: EVALUACIÓN DE COMPROBACIÓN (CUESTIONARIO COMPLETO)
+-------------------------------------------------------------------------------
+1. OPCIÓN MÚLTIPLE (Recordar · DOK 1):
+   Pregunta: ¿Qué símbolo se llama comodín en los genéricos?
+   - Opciones: a) T, b) <>, c) ?, d) *.
+   - Respuesta correcta: c) ?.
+   - Justificación: El signo de interrogación `?` representa un tipo desconocido (wildcard) en Java.
+
+2. OPCIÓN MÚLTIPLE (Analizar · DOK 2):
+   Pregunta: new Repositorio<String>() no compila. ¿Por qué?
+   - Opciones: a) String es final, b) String no implementa Identificable, c) Falta el diamante, d) Los genéricos no aceptan textos.
+   - Respuesta correcta: b) String no implementa Identificable.
+   - Justificación: Viola la cota superior declarada en `<T extends Identificable>`.
+
+3. VERDADERO O FALSO (Comprender · DOK 1):
+   Afirmación: "Con Repositorio<Producto>, el compilador impide guardar un Cliente."
+   - Respuesta: VERDADERO.
+   - Justificación: Es la garantía de seguridad estática de tipos: la instancia quedó parametrizada
+     exclusivamente para `Producto`.
+
+4. RELACIONA (Comprender · DOK 2):
+   - `<T>`                    ---> Parámetro de tipo.
+   - `new ArrayList<>()`      ---> Diamante (inferencia de tipo).
+   - `T extends Identificable`---> Parámetro acotado.
+   - `? extends Producto`     ---> Comodín acotado.
+
+5. ORDENA (Aplicar · DOK 2):
+   Pasos para volver genérica una clase repetida:
+   - Orden: 1. Detectar dos clases que solo cambian de tipo.
+            2. Agregar <T> a una de ellas.
+            3. Cambiar el tipo concreto por T.
+            4. Acotar T si se llaman métodos suyos.
+            5. Borrar la copia y probar con ambos tipos.
+
+6. RESPUESTA ABIERTA (Analizar · DOK 3):
+   Pregunta: Explica por qué el programa sin genéricos falla al ejecutarse y el genérico falla al compilar. ¿Qué cambia para el negocio?
+   - Respuesta: Sin genéricos, el compilador permite meter cualquier Object y el error revienta en
+     producción (`ClassCastException`) cuando un cliente está pagando. Con genéricos, el compilador
+     rechaza el código antes de desplegarlo. Para el negocio significa cero caídas inesperadas en el servicio.
+
+7. RESPUESTA ABIERTA (Evaluar · DOK 3):
+   Pregunta: Julián quiere usar List<Object> para todo "y así no pelear con tipos". ¿Qué le respondes?
+   - Respuesta: Que usar `List<Object>` destruye la seguridad del lenguaje, volviendo al código de hace
+     20 años. Exige recordar mentalmente qué objeto hay en cada índice y llenarlo de casts manuales `(Tipo)`,
+     lo que conduce inevitablemente a bugs y fallos críticos en producción.
+
+8. RESPUESTA ABIERTA (Crear · DOK 3):
+   Pregunta: Escribe un método genérico <T> List<T> primeros(List<T> l, int n) y una llamada con nombres de bebidas.
+   - Respuesta: Implementado en `Main.java` utilizando `lista.subList(0, limite)`.
+
+5. CIERRE DE METACOGNICIÓN Y MARCADOR
+-------------------------------------------------------------------------------
+- Semáforo: VERDE en genéricos, cotas superiores, métodos genéricos y comodines.
+- Insignia ganada: «Molde universal» (Repositorio desacoplado, sin casts manuales y seguridad estricta).

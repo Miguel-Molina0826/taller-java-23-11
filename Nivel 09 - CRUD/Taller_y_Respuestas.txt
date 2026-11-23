@@ -1,0 +1,109 @@
+===============================================================================
+CAFÉ SINTAXIS · NIVEL 09: CRUD
+SALIDAS DE CONSOLA, PREDICCIONES, TALLERES Y EVALUACIÓN RESUELTA
+===============================================================================
+
+1. SALIDA REAL DE CONSOLA AL EJECUTAR EL NIVEL 09
+-------------------------------------------------------------------------------
+$ java Main.java
+=== CAFÉ SINTAXIS · NIVEL 09: CRUD CON ARRAYLIST ===
+--- 1. Pruebas de CRUD con Inventario ---
+1 Listado inicial: [#1 Leche entera (L) (12), #2 Café en grano (kg) (5), #3 Avena (L) (3)]
+2 Buscar ID 2: #2 Café en grano (kg) (5)
+3 ¿Existe ID 9? false
+4 Actualizado ID 1 a 20: #1 Leche entera (L) (20)
+5 Tras eliminar ID 3: [#1 Leche entera (L) (20), #2 Café en grano (kg) (5)]
+6 Primero: #1 Leche entera (L) (20) · Último: #2 Café en grano (kg) (5)
+7 ¿Existe café? true
+
+--- 2. Pruebas de CRUD con Agenda de Reservas ---
+Listado ordenado por hora: [Reserva #2: Martín (2p) a las 18:30, Reserva #4: Julián (3p) a las 18:30, Reserva #1: Valeria (4p) a las 19:00, Reserva #3: Ana (6p) a las 20:00]
+Reservas de las 18:30: [Reserva #2: Martín (2p) a las 18:30, Reserva #4: Julián (3p) a las 18:30]
+Tras cambiar hora de reserva #1: Reserva #1: Valeria (4p) a las 21:00
+Tras cancelar reserva #2: [Reserva #4: Julián (3p) a las 18:30, Reserva #3: Ana (6p) a las 20:00, Reserva #1: Valeria (4p) a las 21:00]
+
+2. PREDICCIONES PRIMM (SESIÓN 03 Y 04)
+-------------------------------------------------------------------------------
+* Predicción 1 (Sesión 03): ¿Qué ocurre si ejecutas `inv.buscar(9).orElseThrow()` cuando #9 no existe?
+  - Excepción: `java.util.NoSuchElementException: No value present`.
+  - Justificación: `orElseThrow()` espera un valor presente; al estar vacío, lanza la excepción.
+
+* Predicción 2 (Sesión 03): Si ejecutas `inv.listar().add(new Insumo(4, "Té", 10))`, ¿qué pasa?
+  - Excepción: `java.lang.UnsupportedOperationException`.
+  - Justificación: `List.copyOf` devuelve una colección inmutable que prohíbe cualquier mutación externa.
+
+3. SESIÓN 06: TALLER DE AUTOCOMPLETAR (Operaciones con ArrayList)
+-------------------------------------------------------------------------------
+Banco de palabras disponible (12 palabras; 7 se usan, 5 sobran):
+[ add, getFirst, set, put, size, removeIf, getLast, ArrayList, length, contains, List.copyOf, Optional ]
+
+Espacios resueltos y justificación frase por frase:
+- Espacio 1: `add` -> Operación C (Crear): inserta el elemento al final de la lista.
+- Espacio 2: `List.copyOf` -> Operación R (Leer): genera una copia inmutable protegida.
+- Espacio 3: `Optional` -> Tipo de retorno en la búsqueda de un elemento singular.
+- Espacio 4: `set` (o `setCantidad`) -> Operación U (Actualizar): modifica el estado del insumo.
+- Espacio 5: `removeIf` -> Operación D (Eliminar): remueve elementos que cumplan el predicado.
+- Espacio 6: `getFirst` -> Obtiene el primer elemento en una colección secuenciada.
+- Espacio 7: `getLast` -> Obtiene el último elemento en una colección secuenciada.
+
+Preguntas de control:
+* Pregunta 1: ¿Por qué no se debe borrar dentro de un bucle `for (Insumo i : insumos)`?
+  - Respuesta: Porque produce un fallo `ConcurrentModificationException` en tiempo de ejecución.
+    El iterador detecta que la colección cambió de tamaño mientras se recorría. Para borrar de forma
+    segura se debe utilizar `removeIf()`.
+
+4. SESIÓN 08: EVALUACIÓN DE COMPROBACIÓN (CUESTIONARIO COMPLETO)
+-------------------------------------------------------------------------------
+1. OPCIÓN MÚLTIPLE (Recordar · DOK 1):
+   Pregunta: ¿Qué significa la U de CRUD?
+   - Opciones: a) Usar, b) Update: actualizar, c) Unir, d) Undo: deshacer.
+   - Respuesta correcta: b) Update: actualizar.
+   - Justificación: Proviene del estándar clásico de operaciones de persistencia de datos.
+
+2. OPCIÓN MÚLTIPLE (Analizar · DOK 2):
+   Pregunta: inv.listar().add(...) lanza UnsupportedOperationException. ¿Por qué?
+   - Opciones: a) La lista está llena, b) listar() devuelve una copia que no se puede modificar, c) Falta import, d) El insumo es inválido.
+   - Respuesta correcta: b) listar() devuelve una copia que no se puede modificar.
+   - Justificación: `List.copyOf` protege el encapsulamiento del inventario generando una lista inmutable.
+
+3. VERDADERO O FALSO (Comprender · DOK 1):
+   Afirmación: "get(i) en un ArrayList tarda más cuanto más grande es la lista."
+   - Respuesta: FALSO.
+   - Justificación: El acceso por índice en `ArrayList` es en tiempo constante O(1); la dirección en
+     memoria se calcula directamente con aritmética de punteros sin importar el tamaño total de la lista.
+
+4. RELACIONA (Comprender · DOK 2):
+   - Crear       ---> `add`
+   - Leer uno    ---> `buscar(id)`
+   - Actualizar  ---> `setCantidad`
+   - Eliminar    ---> `removeIf`
+
+5. ORDENA (Aplicar · DOK 2):
+   Pasos de actualizar(id, cantidad):
+   - Orden: 1. Buscar el insumo por id.
+            2. Si la caja está vacía, devolver false.
+            3. Sacar el insumo del Optional.
+            4. Cambiar la cantidad.
+            5. Devolver true.
+
+6. RESPUESTA ABIERTA (Analizar · DOK 3):
+   Pregunta: Explica qué devuelve buscar(9) cuando no existe y por qué eso es mejor que null.
+   - Respuesta: Devuelve `Optional.empty()`. Es inmensamente superior a `null` porque obliga
+     contractualmente a quien llama al método a considerar y manejar el caso donde el elemento no
+     existe (`if (o.isPresent())` o `.orElse(...)`), erradicando por completo los errores en producción
+     por `NullPointerException`.
+
+7. RESPUESTA ABIERTA (Evaluar · DOK 3):
+   Pregunta: Valeria tendrá 50 000 productos. ¿Seguirías con ArrayList para buscar por id?
+   - Respuesta: No. En una lista con 50 000 elementos, buscar por ID toma tiempo lineal O(n) (hasta 50 000
+     comparaciones en el peor caso). Para esa escala se debe migrar a una tabla hash como `HashMap<Integer, Insumo>`,
+     donde la búsqueda por clave ID se realiza en tiempo constante O(1).
+
+8. RESPUESTA ABIERTA (Crear · DOK 3):
+   Pregunta: Escribe el método boolean existe(String nombre) para Inventario.
+   - Respuesta: Implementado completamente en `Inventario.java` recorriendo la lista con `equalsIgnoreCase()`.
+
+5. CIERRE DE METACOGNICIÓN Y MARCADOR
+-------------------------------------------------------------------------------
+- Semáforo: VERDE en operaciones CRUD, ArrayList, Optional y copias inmutables defensivas.
+- Insignia ganada: «Bodega en orden» (CRUD completo en memoria, sin nulls y con protección inmutable).

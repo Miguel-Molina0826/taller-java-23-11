@@ -1,0 +1,68 @@
+===============================================================================
+CAFÉ SINTAXIS · NIVEL 02 DE 11: ENCAPSULAMIENTO
+Título oficial: ENCAPSULAMIENTO (Encapsulamiento y modificadores de acceso · La caja que nadie descuadra)
+Pregunta guía: ¿Cómo garantiza Java que nadie descuadre la caja ni ponga precios imposibles?
+Ruta pedagógica: Bloom (Recordar -> Comprender -> Aplicar -> Analizar -> Evaluar -> Crear) | DOK 1 a 3
+===============================================================================
+
+1. DEFINICIONES FORMALES Y ESPECIFICACIÓN DEL LENGUAJE (JLS JAVA SE 25)
+-------------------------------------------------------------------------------
+* Encapsulamiento (Information Hiding):
+  Principio fundamental de la POO que consiste en ocultar la estructura interna de representación
+  y el estado directo de un objeto, exponiendo únicamente una interfaz controlada de métodos
+  públicos para interactuar con él.
+  Evita que código externo modifique variables de forma descontrolada, protegiendo las reglas de
+  negocio.
+
+* Modificadores de Acceso (Access Modifiers - JLS §6.6):
+  Java ofrece cuatro niveles de visibilidad:
+  1. `private`: Visible EXCLUSIVAMENTE dentro del cuerpo de la misma clase. Ninguna otra clase,
+     ni siquiera del mismo paquete ni subclases, puede acceder directamente a él.
+  2. Sin modificador (package-private / default): Visible por cualquier clase que pertenezca al
+     mismo paquete.
+  3. `protected`: Visible en el mismo paquete y por subclases en otros paquetes.
+  4. `public`: Visible por cualquier clase desde cualquier lugar.
+
+* Invariante de Clase (Class Invariant):
+  Condición lógica sobre el estado del objeto que debe mantenerse VERDADERA en todo momento a lo
+  largo de su ciclo de vida (por ejemplo: `saldo >= 0`, `0 <= precio <= 50000`, `stock >= 0`).
+  El encapsulamiento es el mecanismo que asegura que ninguna instrucción externa pueda romper
+  el invariante.
+
+* Getters y Setters:
+  - Getter: Método de consulta que entrega una copia del dato sin otorgar control sobre la variable.
+  - Setter: Método de modificación que RECIBE el nuevo valor, LO VALIDA contra las reglas de negocio
+    y solo si es válido lo asigna. Si el valor es inválido, rechaza la operación.
+  - ADVERTENCIA: Crear setters públicos sin validación para todos los atributos es equivalente a
+    dejarlos públicos; destruye el propósito del encapsulamiento.
+
+* La palabra clave `this`:
+  Referencia que apunta a la instancia actual que está ejecutando el código. Se utiliza para
+  eliminar la ambigüedad (shadowing) cuando el nombre del parámetro coincide con el del atributo:
+  `this.precio = precio;` (asigna el parámetro `precio` al campo `precio` de la instancia).
+
+* Manejo de Argumentos Inválidos con Excepciones:
+  - `throw new IllegalArgumentException("Mensaje explicativo");`: Detiene la ejecución del método
+    de inmediato si una precondición falla.
+  - `try { ... } catch (IllegalArgumentException e) { ... }`: Estructura para capturar el error
+    de forma controlada sin que el programa aborte repentinamente, permitiendo obtener el mensaje con
+    `e.getMessage()`.
+
+2. ANALOGÍA REFLEXIVA DEL DOMINIO: CAFÉ SINTAXIS
+-------------------------------------------------------------------------------
+- En el Nivel 01, la caja registradora tenía `latte.precio = 9500;`. Cualquiera podía escribir
+  `caja.saldo = 0;` o poner precios de `-$9500`. Era como tener el cajón del dinero abierto en el
+  mostrador sin llave.
+- En el Nivel 02, la caja está cerrada bajo llave (`private int saldo;`). Para ingresar dinero, el
+  cajero debe usar la ranura autorizada (`cobrar(valor)`), la cual revisa si el billete es auténtico
+  y mayor a cero, sumando automáticamente la venta. Nadie puede meter la mano al cajón.
+
+3. TABLA COMPARATIVA: CÓDIGO EXPUESTO VS. CÓDIGO ENCAPSULADO
+-------------------------------------------------------------------------------
+ASPECTO             CÓDIGO EXPUESTO (NIVEL 1)           CÓDIGO ENCAPSULADO (NIVEL 2)
+-------------------------------------------------------------------------------
+Visibilidad         Campos públicos o paquete.          Campos `private`.
+Reglas de negocio   Dispersas en cualquier parte.       Centralizadas en métodos de la propia clase.
+Seguridad de datos  Cualquiera puede asignar -500.      Rechaza valores imposibles con excepción.
+Invariantes         Fáciles de romper por descuido.     Imposibles de violar desde afuera.
+Mantenimiento       Cambiar un campo rompe mil clases.  Solo se modifica el interior de la clase.

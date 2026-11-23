@@ -1,0 +1,142 @@
+===============================================================================
+CAFÉ SINTAXIS · NIVEL 02: ENCAPSULAMIENTO
+SALIDAS DE CONSOLA, PREDICCIONES, TALLERES Y EVALUACIÓN RESUELTA
+===============================================================================
+
+1. SALIDA REAL DE CONSOLA AL EJECUTAR EL NIVEL 02
+-------------------------------------------------------------------------------
+$ java Main.java
+=== CAFÉ SINTAXIS · NIVEL 02: ENCAPSULAMIENTO ===
+--- 1. Pruebas con Caja ---
+2 ventas · saldo $26000
+Rechazado: Cobro inválido: -500
+Saldo: $26000
+
+--- 2. Pruebas con Producto ---
+Latte $9500 · stock: 10
+Excepción capturada: Precio fuera de rango: -9500
+Sigue en $9500
+
+--- 3. Pruebas con TarjetaRegalo ---
+¿Pagó latte ($9500)? true
+¿Pagó torta ($25000)? false
+Saldo: $20500
+
+--- 4. Pruebas con BotePropinas ---
+Total propinas: $10500 en 3 aportes
+Rechazado aporte negativo: El aporte debe ser mayor a 0: -100
+Cada uno recibe: $3500 · Sobran para el fondo común: $0
+
+--- 5. Pruebas con Termo ---
+Termo restante: 700 ml
+Rechazado servir en termo: No hay suficiente café: quedan 700 ml
+
+2. PREDICCIONES PRIMM (SESIÓN 03 Y 04) Y ANÁLISIS DE ERRORES
+-------------------------------------------------------------------------------
+* Predicción 1 (Sesión 03): ¿Qué imprime la línea 9 de Main.java tras cobrar 19000 y 7000?
+  - Respuesta: `2 ventas · saldo $26000`.
+  - Justificación: Hubo 2 llamadas exitosas a `cobrar()`. 19000 + 7000 = 26000.
+
+* Predicción 2 (Sesión 03): ¿Se ejecuta `saldo += valor;` cuando el cobro es -500?
+  - Respuesta: NO se ejecuta.
+  - Justificación: La condición `if (valor <= 0)` evalúa a `true`, lanzando de inmediato la excepción
+    `IllegalArgumentException`. La ejecución abandona el método antes de alcanzar la instrucción de suma.
+
+* Predicción 3 (Sesión 03): ¿Qué saldo imprime la última línea? ¿Cambió por el cobro rechazado?
+  - Respuesta: Imprime `$26000`. No cambió en absoluto porque el cobro falló antes de tocar el atributo.
+
+* Predicción 4 (Sesión 03): Si quitas el comentario `caja.saldo = 0;`, ¿el programa corre?
+  - Respuesta: No compila.
+  - Error del compilador:
+    `Main.java: error: saldo has private access in Caja`
+    `caja.saldo = 0;`
+    `^`
+
+* Predicción 5 (Sesión 04): Si intentas `latte.setPrecio(-9500)`, ¿qué pasa con el precio previo?
+  - Respuesta: El setter arroja `IllegalArgumentException: Precio fuera de rango: -9500`. El precio previo
+    se mantiene intacto en $9500.
+
+3. SESIÓN 06: TALLER DE AUTOCOMPLETAR (TarjetaRegalo.java y Main.java)
+-------------------------------------------------------------------------------
+Banco de palabras disponible (12 palabras; 7 se usan, 5 sobran):
+[ getSaldo (x2), int, void, boolean, >=, public, <=, IllegalArgumentException, setSaldo, private, return ]
+
+Espacios resueltos y justificación frase por frase:
+- Espacio 1: `private` -> Protege el atributo `saldo` para que no sea manipulado desde afuera.
+- Espacio 2: `getSaldo` -> Nombre del getter que permite consultar el saldo públicamente.
+- Espacio 3: `<=` -> Operador relacional: si el valor de recarga es menor o igual a 0, se rechaza.
+- Espacio 4: `IllegalArgumentException` -> Tipo de excepción estándar para rechazar argumentos ilegales.
+- Espacio 5: `boolean` -> Tipo de retorno de `pagar(int valor)` para avisar si el pago fue aprobado o rechazado.
+- Espacio 6: `return` -> Sentencia requerida para retornar `true` tras descontar el saldo exitosamente.
+- Espacio 7: `getSaldo` -> Invocación en `Main.java` para imprimir el saldo restante.
+
+Preguntas de control:
+* Pregunta 1: ¿Qué pasaría con el invariante si en el espacio 1 escribes `public`?
+  - Respuesta: Se rompería la protección del estado; cualquier parte del código podría ejecutar
+    `t.saldo = -50000;` o `t.saldo = 999999;` sin pasar por `recargar()` ni `pagar()`, dejando la
+    tarjeta en un estado imposible.
+* Pregunta 2: Si en el espacio 3 usas `<` en lugar de `<=`, ¿qué recarga extraña se aceptaría?
+  - Respuesta: Se aceptaría una recarga de `$0` (`valor = 0`), lo cual es ilógico en el negocio porque
+    no agrega fondos pero consume procesamiento y registraría una recarga ficticia.
+
+4. SESIÓN 08: EVALUACIÓN DE COMPROBACIÓN (CUESTIONARIO COMPLETO)
+-------------------------------------------------------------------------------
+1. OPCIÓN MÚLTIPLE (Recordar · DOK 1):
+   Pregunta: ¿Qué modificador deja un atributo visible solo dentro de su clase?
+   - Opciones: a) public, b) protected, c) private, d) static.
+   - Respuesta correcta: c) private.
+   - Justificación: `private` restringe el acceso estrictamente a los miembros declarados dentro
+     de la misma clase delimitada por sus llaves.
+
+2. OPCIÓN MÚLTIPLE (Analizar · DOK 2):
+   Pregunta: El compilador dice "saldo has private access in Caja". ¿Qué arreglo respeta el encapsulamiento?
+   - Opciones: a) Cambiar a public int saldo, b) Usar caja.cobrar(...) o getSaldo(), c) Borrar el atributo, d) Quitar private de la clase.
+   - Respuesta correcta: b) Usar caja.cobrar(...) o getSaldo().
+   - Justificación: El encapsulamiento exige interactuar a través de los métodos públicos provistos por
+     la interfaz de la clase, sin debilitar la visibilidad de los atributos.
+
+3. VERDADERO O FALSO (Comprender · DOK 1):
+   Afirmación: "Un getter permite que otra clase cambie el valor del atributo privado."
+   - Respuesta: FALSO.
+   - Justificación: Un getter únicamente devuelve el valor actual (lectura); no proporciona ninguna
+     vía para reasignar o modificar la variable interna.
+
+4. RELACIONA (Comprender · DOK 2):
+   - `private`    ---> Esconde el dato (limita la visibilidad al interior de la clase).
+   - `getSaldo()` ---> Consulta sin cambiar (permite la lectura segura del estado).
+   - `throw`      ---> Rechaza un dato inválido (interrumpe el flujo emitiendo una excepción).
+   - `catch`      ---> Responde al error (atrapa la excepción para gestionarla limpiamente).
+
+5. ORDENA (Aplicar · DOK 2):
+   Pasos del método cobrar de la caja:
+   - Orden: 1. Recibir el valor como parámetro.
+            2. Revisar si es 0 o menos.
+            3. Lanzar la excepción si lo es.
+            4. Sumar al saldo.
+            5. Contar la venta.
+
+6. RESPUESTA ABIERTA (Analizar · DOK 3):
+   Pregunta: En el setter, ¿qué pasa si escribes `precio = precio;` en lugar de `this.precio = precio;`?
+   - Respuesta: Se produce un enmascaramiento o ensombrecimiento de variable (variable shadowing).
+     El identificador `precio` se resuelve al parámetro más cercano en el ámbito local. Por ende,
+     el parámetro se asigna a sí mismo y el atributo de instancia `this.precio` jamás recibe el nuevo
+     valor, quedando con su valor por defecto (0).
+
+7. RESPUESTA ABIERTA (Evaluar · DOK 3):
+   Pregunta: Martín propone un `setSaldo(int)` público "por si acaso". ¿Lo aceptas? Justifica.
+   - Respuesta: Se rechaza categóricamente. Un `setSaldo` público destruiría el invariante de la caja,
+     ya que permitiría sobrescribir el saldo arbitrariamente (descuadres de dinero, montos negativos,
+     robos o borrado de transacciones). Los únicos caminos para alterar el saldo deben ser las
+     operaciones comerciales válidas: `cobrar(valor)` y `retirar(valor)`.
+
+8. RESPUESTA ABIERTA (Crear · DOK 3):
+   Pregunta: Escribe la clase Termo con litros/ml privados, servir(int ml) que rechace pedir más de lo que hay, y su getter.
+   - Respuesta: Implementada completamente en `Termo.java` validando capacidad restante y arrojando
+     `IllegalArgumentException` si se solicita servir más líquido del disponible.
+
+5. CIERRE DE METACOGNICIÓN Y MARCADOR
+-------------------------------------------------------------------------------
+- Semáforo: VERDE en encapsulamiento, invariantes y manejo de excepciones.
+- Insignia ganada: «Caja fuerte» (Atributos protegidos, validaciones exhaustivas y sin setters destructivos).
+- Explicación en 60 segundos: Encapsular no es solo poner `private`; es definir las compuertas lógicas
+  del objeto para que sea físicamente imposible que un error externo corrompa su estado interno.

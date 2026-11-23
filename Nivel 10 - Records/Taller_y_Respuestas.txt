@@ -1,0 +1,119 @@
+===============================================================================
+CAFÉ SINTAXIS · NIVEL 10: RECORDS
+SALIDAS DE CONSOLA, PREDICCIONES, TALLERES Y EVALUACIÓN RESUELTA
+===============================================================================
+
+1. SALIDA REAL DE CONSOLA AL EJECUTAR EL NIVEL 10
+-------------------------------------------------------------------------------
+$ java Main.java
+=== CAFÉ SINTAXIS · NIVEL 10: RECORDS Y PATTERN MATCHING ===
+--- 1. Pruebas con Records de Recibo ---
+toString generado automáticamente: LineaRecibo[producto=Latte, precio=9500, cantidad=2]
+Acceso directo a componentes: Latte → $19000
+¿Son iguales por datos (equals)? true
+Recibo #1001 · Total: $26000
+Deconstrucción de primera línea: 2 × Latte a $9500
+
+--- 2. Pruebas con Pagos y Jerarquía Sellada ---
+Efectivo directo: $26000
+Tarjeta crédito a 3 cuotas por $50000
+Tarjeta débito por $15000
+Billetera digital (Nequi) por $12000
+
+--- 3. Pruebas con Calificación ---
+Calificación: Sofía dio 5 estrellas
+Rechazada calificación: Estrellas debe estar entre 1 y 5: 6
+
+--- 4. Pruebas con Menú del Día Inmutable ---
+Promedio del menú del día: $8250
+Ítem original: ItemMenu[nombre=Latte Vainilla, categoria=Bebida, precio=10000]
+Ítem nuevo tras conPrecio: ItemMenu[nombre=Latte Vainilla, categoria=Bebida, precio=11000]
+¿El original cambió? false
+
+--- 5. Pruebas con Propina ---
+Propina registrada: Propina[barista=Martín, valor=5000]
+
+2. PREDICCIONES PRIMM (SESIÓN 03 Y 04)
+-------------------------------------------------------------------------------
+* Predicción 1 (Sesión 03): Comparación de dos instancias con idénticos valores en clase normal vs. record:
+  - Clase normal: `a.equals(b)` -> `false` (compara identidades de memoria si no se sobrescribe).
+  - Record: `new LineaRec("Latte").equals(new LineaRec("Latte"))` -> `true` (compara por componentes).
+
+* Predicción 2 (Sesión 03): Si ejecutas `cantidad = cantidad * 2;` dentro del cuerpo de un método de un record:
+  - Error del compilador: `cannot assign a value to final variable cantidad`.
+  - Justificación: Los componentes de un record son implícitamente `final`.
+
+3. SESIÓN 06: TALLER DE AUTOCOMPLETAR (Calificacion.java y Main.java)
+-------------------------------------------------------------------------------
+Banco de palabras disponible (12 palabras; 7 se usan, 5 sobran):
+[ record, Calificacion, public, estrellas, class, int, String, return, final, static, void, new ]
+
+Espacios resueltos y justificación frase por frase:
+- Espacio 1: `record` -> Declara la estructura inmutable `public record Calificacion(...)`.
+- Espacio 2: `Calificacion` -> Declaración del constructor compacto `public Calificacion { ... }`.
+- Espacio 3: `estrellas` -> Componente evaluado en la validación `estrellas < 1 || estrellas > 5`.
+- Espacio 4: `IllegalArgumentException` -> Excepción lanzada si la validación falla.
+- Espacio 5: `new` -> Instanciación en `Main.java` con `new Calificacion(...)`.
+- Espacio 6: `cliente()` -> Acceso al componente cliente sin palabra get.
+- Espacio 7: `estrellas()` -> Acceso al componente estrellas.
+
+Preguntas de control:
+* Pregunta 1: ¿Por qué en un record no se escribe `this.estrellas = estrellas;` en el constructor compacto?
+  - Respuesta: Porque en los constructores compactos, Java se encarga de asignar automáticamente
+    todos los componentes a sus campos finales una vez termina el bloque de validación.
+
+4. SESIÓN 08: EVALUACIÓN DE COMPROBACIÓN (CUESTIONARIO COMPLETO)
+-------------------------------------------------------------------------------
+1. OPCIÓN MÚLTIPLE (Recordar · DOK 1):
+   Pregunta: ¿Cómo se llama el acceso al componente precio de un record?
+   - Opciones: a) getPrecio(), b) precio(), c) .precio, d) setPrecio().
+   - Respuesta correcta: b) precio().
+   - Justificación: Java genera los métodos de acceso con el nombre exacto del componente, sin la palabra `get`.
+
+2. OPCIÓN MÚLTIPLE (Analizar · DOK 2):
+   Pregunta: Dentro del record, `cantidad = cantidad * 2;` no compila. ¿Por qué?
+   - Opciones: a) Falta this, b) Los campos de un record son final, c) cantidad es String, d) Falta return.
+   - Respuesta correcta: b) Los campos de un record son final.
+   - Justificación: Los records son portadores inmutables de datos; sus campos no pueden reasignarse tras crearse.
+
+3. VERDADERO O FALSO (Comprender · DOK 1):
+   Afirmación: "Dos records con los mismos valores en sus componentes son iguales según equals."
+   - Respuesta: VERDADERO.
+   - Justificación: Java implementa `equals()` y `hashCode()` comparando el valor de cada componente individual.
+
+4. RELACIONA (Comprender · DOK 2):
+   - Encabezado            ---> Declara los componentes del record.
+   - Constructor compacto  ---> Valida antes de asignar.
+   - `List.copyOf`         ---> Protege la lista interna asegurando inmutabilidad.
+   - Patrón de record      ---> Extrae y deconstruye los componentes directamente.
+
+5. ORDENA (Aplicar · DOK 2):
+   Orden de lo que ocurre en `new LineaRecibo("Latte", 9500, 2)`:
+   - Orden: 1. Java elige el constructor canónico.
+            2. Corre el cuerpo del constructor compacto.
+            3. Se valida la cantidad.
+            4. Se asignan los tres campos automáticamente.
+            5. La variable recibe la referencia al record instanciado.
+
+6. RESPUESTA ABIERTA (Analizar · DOK 3):
+   Pregunta: Explica por qué Recibo copia la lista en su constructor compacto y qué podría pasar si no lo hiciera.
+   - Respuesta: Aunque un record es inmutable en sus referencias de componentes, un `ArrayList` interno
+     sigue siendo mutable en sus elementos. Si no se hiciera `lineas = List.copyOf(lineas);`, código externo
+     podría conservar la lista original y llamar a `listaOriginal.add(...)`, alterando el contenido del
+     recibo después de su emisión y violando la garantía de inmutabilidad.
+
+7. RESPUESTA ABIERTA (Evaluar · DOK 3):
+   Pregunta: Julián quiere convertir Insumo del nivel 9 en record. ¿Es buena idea?
+   - Respuesta: No es una buena idea en ese diseño. `Insumo` en el Nivel 09 representa una entidad de
+     bodega cuyo stock cambia constantemente a lo largo del día (`setCantidad`). Un record es estrictamente
+     inmutable; forzarlo a ser record obligaría a reemplazar la instancia entera en la lista con cada
+     modificación de stock, lo cual no se ajusta al modelo conceptual de una entidad mutable de inventario.
+
+8. RESPUESTA ABIERTA (Crear · DOK 3):
+   Pregunta: Escribe record Propina(String barista, int valor) que rechace valores negativos.
+   - Respuesta: Implementado completamente en `Propina.java`.
+
+5. CIERRE DE METACOGNICIÓN Y MARCADOR
+-------------------------------------------------------------------------------
+- Semáforo: VERDE en records, constructor compacto, pattern matching y sellado.
+- Insignia ganada: «Dato puro» (Recibos inmutables, sellado exhaustivo y deconstrucción de patrones).

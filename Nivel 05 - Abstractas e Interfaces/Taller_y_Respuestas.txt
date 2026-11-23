@@ -1,0 +1,119 @@
+===============================================================================
+CAFÉ SINTAXIS · NIVEL 05: ABSTRACTAS E INTERFACES
+SALIDAS DE CONSOLA, PREDICCIONES, TALLERES Y EVALUACIÓN RESUELTA
+===============================================================================
+
+1. SALIDA REAL DE CONSOLA AL EJECUTAR EL NIVEL 05
+-------------------------------------------------------------------------------
+$ java Main.java
+=== CAFÉ SINTAXIS · NIVEL 05: ABSTRACTAS E INTERFACES ===
+--- 1. Pruebas con Menú de Barra ---
+Capuchino $9000 · 4 min
+  opciones: leche de avena, shot extra
+  avena: +$1500
+Brownie $7000 · 1 min
+
+--- 2. Pruebas con Medios de Pago ---
+Efectivo $9500: aprobado
+Efectivo $9500: aprobado
+Billetera digital $9500: aprobado
+Billetera digital $9500: rechazado
+Tarjeta (Visa) $9500: aprobado
+Tarjeta (Visa) $9500: aprobado
+
+--- 3. Pruebas con Snacks Descontables ---
+Galleta de avena: $3000
+Con 20 %: $2400
+
+--- 4. Pruebas con Formas de Entrega ---
+Pedido #102 · Costo entrega: $0
+Pedido #103 · Costo entrega: $500
+Pedido #101 · Costo entrega: $4400
+  Estado: en camino (¿Entregado? false)
+  Estado tras avanzar: entregado (¿Entregado? true)
+
+2. PREDICCIONES PRIMM (SESIÓN 03 Y 04)
+-------------------------------------------------------------------------------
+* Predicción 1 (Sesión 03): ¿Qué ocurre si intentas ejecutar `new Producto("Té", 3000)`?
+  - Error del compilador: `Producto is abstract; cannot be instantiated`.
+  - Justificación: Las clases abstractas no representan objetos tangibles completos; son plantillas.
+
+* Predicción 2 (Sesión 04): Al cobrar dos veces 9500 a la Billetera que empezó con 12000:
+  - Primer cobro: $9500 -> Aprobado (Saldo restante: 12000 - 9500 = 2500).
+  - Segundo cobro: $9500 -> Rechazado (2500 < 9500).
+
+3. SESIÓN 06: TALLER DE AUTOCOMPLETAR (Descontable, Snack, Galleta y Main)
+-------------------------------------------------------------------------------
+Banco de palabras disponible (12 palabras; 7 se usan, 5 sobran):
+[ default, super, final, extends, abstract (x2), Snack, implements, static, Galleta, interface, class, Descontable ]
+
+Espacios resueltos y justificación frase por frase:
+- Espacio 1: `interface` -> Declara el contrato `public interface Descontable`.
+- Espacio 2: `default` -> Modificador para el método con cuerpo dentro de la interfaz.
+- Espacio 3: `abstract` -> Declara la clase plantilla `public abstract class Snack`.
+- Espacio 4: `implements` -> Firma del contrato `implements Descontable`.
+- Espacio 5: `abstract` -> Declara el método sin cuerpo `public abstract String nombre();`.
+- Espacio 6: `extends` -> Herencia de clase abstracta `class Galleta extends Snack`.
+- Espacio 7: `Descontable` -> Tipo de interfaz utilizado para asignar `d = s;`.
+
+Preguntas de control:
+* Pregunta 1: ¿Por qué Snack puede firmar Descontable sin escribir conDescuento?
+  - Respuesta: Porque `conDescuento` es un método `default` en la interfaz; ya contiene una implementación
+    concreta válida que se hereda directamente.
+* Pregunta 2: Si en el espacio 5 quitas abstract, ¿qué pide el compilador?
+  - Respuesta: `missing method body, or declare abstract`. Exige colocarle un cuerpo `{ ... }` o declararlo abstracto.
+
+4. SESIÓN 08: EVALUACIÓN DE COMPROBACIÓN (CUESTIONARIO COMPLETO)
+-------------------------------------------------------------------------------
+1. OPCIÓN MÚLTIPLE (Recordar · DOK 1):
+   Pregunta: ¿Qué no se puede hacer con una clase abstracta?
+   - Opciones: a) Heredar de ella, b) Crear objetos con new, c) Tener atributos, d) Tener métodos concretos.
+   - Respuesta correcta: b) Crear objetos con new.
+   - Justificación: La especificación de Java prohíbe explícitamente instanciar tipos abstractos.
+
+2. OPCIÓN MÚLTIPLE (Analizar · DOK 2):
+   Pregunta: El compilador dice "Postre is not abstract and does not override abstract method...". ¿Qué falta?
+   - Opciones: a) Un constructor, b) Escribir el método abstracto en Postre, c) Un import, d) Quitar extends.
+   - Respuesta correcta: b) Escribir el método abstracto en Postre.
+   - Justificación: Las subclases concretas tienen la obligación contractual de proveer el cuerpo de todos los
+     métodos abstractos heredados.
+
+3. VERDADERO O FALSO (Comprender · DOK 1):
+   Afirmación: "Una clase puede implementar varias interfaces a la vez."
+   - Respuesta: VERDADERO.
+   - Justificación: Java permite `implements InterfazA, InterfazB, InterfazC`, ofreciendo herencia múltiple de contratos.
+
+4. RELACIONA (Comprender · DOK 2):
+   - `abstract`   ---> Plantilla o método sin cuerpo.
+   - `interface`  ---> Declara un contrato puro de métodos.
+   - `implements` ---> Firma un contrato en una clase.
+   - `default`    ---> Método con cuerpo en una interfaz.
+
+5. ORDENA (Aplicar · DOK 2):
+   Pasos para agregar un nuevo medio de pago:
+   - Orden: 1. Leer la interfaz MedioDePago.
+            2. Crear la clase que la implementa.
+            3. Escribir nombre() y pagar().
+            4. Agregar un objeto a la lista de medios.
+            5. Ejecutar y comparar la salida.
+
+6. RESPUESTA ABIERTA (Analizar · DOK 3):
+   Pregunta: Explica por qué la caja funciona con un medio de pago nuevo sin cambiar el método cobrar.
+   - Respuesta: Porque `cobrar` está programado contra la abstracción `MedioDePago`. Solo le interesa
+     que el objeto recibido garantice la existencia de `nombre()` y `pagar(int)`. No depende de detalles internos.
+
+7. RESPUESTA ABIERTA (Evaluar · DOK 3):
+   Pregunta: Ana quiere convertir Producto en interfaz. ¿Qué perdería y qué ganaría?
+   - Respuesta: Perdería los atributos de instancia compartidos (`nombre`, `precio`) y el constructor protegido,
+     obligando a cada clase hija (`Bebida`, `Postre`, `Snack`) a redeclarar y duplicar esos campos y sus getters.
+     Ganaría únicamente la posibilidad de herencia múltiple, pero en este dominio toda bebida y postre ES un
+     producto con estado real, por lo que una clase abstracta es la opción arquitectónica superior.
+
+8. RESPUESTA ABIERTA (Crear · DOK 3):
+   Pregunta: Escribe la interfaz Imprimible con String texto() y default void imprimir() que lo muestre.
+   - Respuesta: Implementada completamente en `Imprimible.java`.
+
+5. CIERRE DE METACOGNICIÓN Y MARCADOR
+-------------------------------------------------------------------------------
+- Semáforo: VERDE en clases abstractas, contratos de interfaces y métodos default.
+- Insignia ganada: «Contrato cumplido» (Diseño limpio, interfaces desacopladas y polimorfismo demostrado).

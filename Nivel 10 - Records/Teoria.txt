@@ -1,0 +1,56 @@
+===============================================================================
+CAFÉ SINTAXIS · NIVEL 10 DE 11: RECORDS
+Título oficial: RECORDS (Records: datos inmutables · Recibos que no se alteran)
+Pregunta guía: ¿Cómo representa Java datos puros e inmutables sin escribir cientos de líneas repetitivas?
+Ruta pedagógica: Bloom (Recordar -> Comprender -> Aplicar -> Analizar -> Evaluar -> Crear) | DOK 1 a 3
+===============================================================================
+
+1. DEFINICIONES FORMALES Y ESPECIFICACIÓN DEL LENGUAJE (JLS JAVA SE 25 §8.10)
+-------------------------------------------------------------------------------
+* Qué es un Record:
+  Una declaración de clase restringida diseñada específicamente para actuar como un portador
+  transparente e inmutable de datos (transparent carrier for immutable data).
+  - Se declara con la palabra clave `record`:
+    `public record LineaRecibo(String producto, int precio, int cantidad) { }`
+  - La lista de componentes entre paréntesis define simultáneamente su estado y su constructor canónico.
+  - Los records son implícitamente `final` (no pueden ser extendidos) y heredan de `java.lang.Record`.
+
+* Miembros que el Compilador de Java Genera Automáticamente:
+  1. Campos `private final` para cada componente (con el mismo nombre y tipo).
+  2. Constructor canónico público que recibe todos los componentes en orden y los asigna.
+  3. Métodos de acceso públicos para cada componente, CON EL MISMO NOMBRE DEL COMPONENTE,
+     sin el prefijo `get`: `l1.producto()`, `l1.precio()`, `l1.cantidad()`.
+  4. Método `equals(Object)` que compara campo por campo los valores de los componentes.
+  5. Método `hashCode()` coherente con la implementación de `equals()`.
+  6. Método `toString()` formateado de forma legible: `LineaRecibo[producto=Latte, precio=9500, cantidad=2]`.
+
+* Constructor Compacto (Compact Constructor - JLS §8.10.4.2):
+  Forma especial de constructor exclusiva de los records que omite la lista de parámetros:
+  `public LineaRecibo { if (cantidad < 1) throw ...; }`
+  - Propósito: Validar y normalizar los componentes.
+  - Las asignaciones a los campos de instancia (`this.x = x;`) ocurren de forma AUTOMÁTICA al
+    finalizar el cuerpo del constructor compacto; el desarrollador no debe ni puede escribirlas.
+
+* Jerarquías Selladas (`sealed interface / class` - JLS §8.1.6, §9.1.4):
+  Permite a una interfaz o clase restringir explícitamente cuáles subclases tienen autorización para
+  implementarla mediante la cláusula `permits`:
+  `public sealed interface Pago permits Efectivo, Tarjeta, Billetera { }`
+  El compilador conoce el universo total cerrado de subtipos, habilitando verificaciones de
+  exhaustividad en los bloques `switch`.
+
+* Pattern Matching para Records (JEP 440 / JLS §14.30.1):
+  Permite deconstruir un record directamente en sus componentes primitivos al evaluarlo en un
+  `instanceof` o `switch`:
+  `if (obj instanceof LineaRecibo(var prod, var prec, var cant)) { ... }`
+  Extrae las variables en una sola operación sin necesidad de invocar los métodos accesores manualmente.
+
+2. TABLA COMPARATIVA: CLASE TRADICIONAL FRENTE A RECORD
+-------------------------------------------------------------------------------
+ASPECTO             CLASE COMÚN EN JAVA                 RECORD EN JAVA MODERNO
+-------------------------------------------------------------------------------
+Propósito           Encapsular lógica de negocio compleja. Modelar datos puros e inmutables.
+Líneas de código    ~30 líneas (campos, getters, equals). ~1 línea de encabezado.
+Mutabilidad         Puede tener campos mutables/setters. Estrictamente inmutable (campos final).
+Métodos de acceso   `getPrecio()`                       `precio()` (sin palabra get).
+Herencia            Puede extender otras clases.        Hereda de java.lang.Record (no extends).
+Constructor         Se debe escribir la asignación `this`. Constructor canónico/compacto automático.

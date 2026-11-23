@@ -1,0 +1,122 @@
+===============================================================================
+CAFÉ SINTAXIS · NIVEL 04: HERENCIA
+SALIDAS DE CONSOLA, PREDICCIONES, TALLERES Y EVALUACIÓN RESUELTA
+===============================================================================
+
+1. SALIDA REAL DE CONSOLA AL EJECUTAR EL NIVEL 04
+-------------------------------------------------------------------------------
+$ java Main.java
+=== CAFÉ SINTAXIS · NIVEL 04: HERENCIA Y COMPOSICIÓN ===
+--- 1. Pruebas con Vitrina de Productos (Polimorfismo) ---
+Latte cuesta 9500
+Latte $9500 · 350 ml
+Torta de zanahoria $8000 · vegano
+Galleta $3000
+
+--- 2. Pruebas con Pedido y Líneas de Pedido ---
+Mesa 4
+ 2 × Latte = $19000
+ 1 × Brownie = $7000
+Total: $26000
+Cantidad total de ítems: 3
+
+--- 3. Pruebas con Temporada y Combo ---
+Ponqué de calabaza $8500 (solo octubre)
+Combo: $16200
+
+--- 4. Pruebas con Nómina de Empleados ---
+--- Resumen de Nómina del Turno ---
+Martín · Pago: $59000
+Sofía · Pago: $60000
+Total Nómina: $119000
+
+--- 5. Pruebas con Te ---
+Matcha Ceremonial $12000 · 250 ml · Origen: Uji, Japón
+
+2. PREDICCIONES PRIMM (SESIÓN 03 Y 04)
+-------------------------------------------------------------------------------
+* Predicción 1 (Sesión 03): Al recorrer `List<Producto> vitrina`, ¿qué método `descripcion()` se ejecuta?
+  - Respuesta: Para el latte se ejecuta el `descripcion()` de `Bebida` (imprime ml), para la torta
+    el de `Postre` (imprime vegano) y para la galleta el de `Producto`.
+  - Justificación: Despacho dinámico de métodos en polimorfismo en tiempo de ejecución.
+
+* Predicción 2 (Sesión 04): Si agregas un Postre vegano a `Pedido`, ¿tienes que modificar `Pedido`?
+  - Respuesta: No. `Pedido` solo conoce `Producto`. Debido al polimorfismo, cualquier subclase de
+    `Producto` es aceptada transparentemente por `agregar(Producto p, int cantidad)`.
+
+3. SESIÓN 06: TALLER DE AUTOCOMPLETAR (Temporada.java, Combo.java y Main.java)
+-------------------------------------------------------------------------------
+Banco de palabras disponible (12 palabras; 7 se usan, 5 sobran):
+[ super (x2), Object, Producto, Bebida, getPrecio, this, implements, @Override, getNombre, extends, Temporada ]
+
+Espacios resueltos y justificación frase por frase:
+- Espacio 1: `extends` -> Establece la relación de herencia `class Temporada extends Producto`.
+- Espacio 2: `super` -> Invocación del constructor de la superclase `super(nombre, precio);`.
+- Espacio 3: `@Override` -> Anotación para indicar al compilador que se sobrescribe `descripcion()`.
+- Espacio 4: `super` -> Reutiliza la descripción de la superclase `super.descripcion() + ...`.
+- Espacio 5: `Producto` -> Tipo del atributo `principal` en la clase compuesta `Combo`.
+- Espacio 6: `getPrecio` -> Llamada al método para obtener el precio del acompañante `acompanante.getPrecio()`.
+- Espacio 7: `Temporada` -> Operador `new Temporada(...)` para crear el ponqué de calabaza.
+
+Preguntas de control:
+* Pregunta 1: ¿Por qué Combo no hereda de Producto? Usa la prueba "es un / tiene un".
+  - Respuesta: Porque un Combo no "es un" producto individual simple, sino que "tiene un" producto
+    principal y "tiene un" producto acompañante (composición de dos productos con descuento).
+* Pregunta 2: Si en el espacio 4 escribes `this` en vez de `super`, ¿qué pasa al ejecutar?
+  - Respuesta: Se produce una recursión infinita (`this.descripcion()` se llama a sí mismo) que termina
+    en un error catastrófico `StackOverflowError`.
+
+4. SESIÓN 08: EVALUACIÓN DE COMPROBACIÓN (CUESTIONARIO COMPLETO)
+-------------------------------------------------------------------------------
+1. OPCIÓN MÚLTIPLE (Recordar · DOK 1):
+   Pregunta: ¿Qué palabra declara que una clase hereda de otra?
+   - Opciones: a) implements, b) extends, c) super, d) new.
+   - Respuesta correcta: b) extends.
+   - Justificación: `extends` es la palabra reservada para extender clases en Java.
+
+2. OPCIÓN MÚLTIPLE (Analizar · DOK 2):
+   Pregunta: Al recorrer List<Producto>, el latte imprime "... · 350 ml". ¿Por qué?
+   - Opciones: a) La lista lo convierte en Bebida, b) Cada objeto usa su propia versión sobrescrita, c) Producto copia el método de Bebida, d) Es un error de Java.
+   - Respuesta correcta: b) Cada objeto usa su propia versión sobrescrita.
+   - Justificación: Es polimorfismo puro con despacho dinámico en tiempo de ejecución.
+
+3. VERDADERO O FALSO (Comprender · DOK 1):
+   Afirmación: "En Java una clase puede tener dos superclases directas."
+   - Respuesta: FALSO.
+   - Justificación: Java maneja herencia simple para evitar el problema del diamante y ambigüedades
+     de estado de múltiples padres.
+
+4. RELACIONA (Comprender · DOK 2):
+   - `super(...)`          ---> Llama al constructor del padre.
+   - `@Override`           ---> Confirma la sobrescritura ante el compilador.
+   - `super.descripcion()` ---> Reusa el método del padre.
+   - `List<LineaPedido>`   ---> Composición (el pedido contiene sus líneas).
+
+5. ORDENA (Aplicar · DOK 2):
+   Orden al ejecutar `new Bebida("Latte", 9500, 350)`:
+   - Orden: 1. Java elige el constructor de Bebida.
+            2. `super(...)` ejecuta el constructor de Producto.
+            3. Se asignan nombre y precio en el padre.
+            4. Se asigna ml en la hija.
+            5. La variable recibe la referencia al objeto completo.
+
+6. RESPUESTA ABIERTA (Analizar · DOK 3):
+   Pregunta: Explica con la prueba "es un / tiene un" por qué Pedido no debe heredar de LineaPedido.
+   - Respuesta: Un pedido NO "es una" línea de pedido (no tiene sentido semántico decir que un pedido
+     es un producto con cantidad unitaria). Un pedido TIENE múltiples líneas de pedido (`1 a muchas`).
+     Heredar acoplaría el pedido rígidamente a una sola línea y expondría métodos inapropiados.
+
+7. RESPUESTA ABIERTA (Evaluar · DOK 3):
+   Pregunta: Bloch y Gamma recomiendan preferir composición. Da un caso de la cafetería en que la herencia sí es la mejor opción.
+   - Respuesta: Para la jerarquía `Bebida extends Producto` y `Postre extends Producto`. Aquí la relación
+     "es un" es estrictamente invariante en el dominio, comparten estado fundamental (nombre y precio)
+     y comportamiento base (`descripcion()`), y permite manejar la vitrina de manera polimórfica homogénea.
+
+8. RESPUESTA ABIERTA (Crear · DOK 3):
+   Pregunta: Escribe class Te extends Bebida con el atributo origen y su descripcion() sobrescrita.
+   - Respuesta: Implementada completamente en `Te.java`.
+
+5. CIERRE DE METACOGNICIÓN Y MARCADOR
+-------------------------------------------------------------------------------
+- Semáforo: VERDE en herencia, super, override y composición.
+- Insignia ganada: «Árbol genealógico» (Jerarquías limpias, composición bien aplicada y polimorfismo demostrado).

@@ -1,0 +1,61 @@
+===============================================================================
+CAFÉ SINTAXIS · NIVEL 05 DE 11: ABSTRACTAS E INTERFACES
+Título oficial: ABSTRACTAS E INTERFACES (Clases abstractas e interfaces · Contratos de la barra)
+Pregunta guía: ¿Cómo define Java qué debe hacer una clase sin obligarla a cómo hacerlo?
+Ruta pedagógica: Bloom (Recordar -> Comprender -> Aplicar -> Analizar -> Evaluar -> Crear) | DOK 1 a 3
+===============================================================================
+
+1. DEFINICIONES FORMALES Y ESPECIFICACIÓN DEL LENGUAJE (JLS JAVA SE 25)
+-------------------------------------------------------------------------------
+* Clases Abstractas (Abstract Classes - JLS §8.1.1.1):
+  Una clase declarada con el modificador `abstract`. Sirve como plantilla base incompleta.
+  - No puede ser instanciada directamente con `new` (`new Producto(...)` produce error de compilación).
+  - Puede contener tanto métodos abstractos (sin cuerpo) como métodos concretos (con implementación).
+  - Puede tener constructores y atributos de instancia privados/protegidos para compartir estado
+    entre clases estrechamente emparentadas mediante herencia (`extends`).
+
+* Métodos Abstractos (Abstract Methods - JLS §8.4.3.1):
+  Método que se declara sin cuerpo, finalizando con un punto y coma:
+  `public abstract int minutosPreparacion();`
+  Obliga a toda subclase concreta que extienda la clase abstracta a proporcionar una implementación
+  sobrescrita (`@Override`). Si no lo hace, la subclase también debe ser abstracta.
+
+* Interfaces (Interfaces - JLS Cap. 9):
+  Tipo de referencia que define un contrato puro de comportamiento.
+  - Se declara con la palabra clave `interface`.
+  - Una clase "firma" el contrato mediante `implements NombreInterfaz`.
+  - Java permite herencia múltiple de interfaces: una clase puede implementar múltiples interfaces
+    a la vez (`implements Personalizable, Descontable, Serializable`).
+  - No tienen estado de instancia (no pueden declarar atributos de instancia mutables ni constructores).
+  - Todos sus métodos abstractos son implícitamente `public`.
+
+* Métodos Default en Interfaces (Default Methods - JLS §9.4.3):
+  Introducidos para permitir la evolución de interfaces sin romper código existente.
+  Llevan la palabra clave `default` y contienen una implementación concreta en la interfaz:
+  `default String opciones() { return "..."; }`
+  Cualquier clase que implemente la interfaz hereda este método automáticamente a menos que decida
+  sobrescribirlo.
+
+* Pattern Matching para `instanceof` (JLS §14.30.1):
+  Sintaxis moderna que combina la comprobación de tipo y la conversión segura (cast) en un solo paso:
+  `if (p instanceof Personalizable per) { ... }`
+  Si `p` implementa `Personalizable`, la variable `per` se crea automáticamente con el tipo correcto
+  y está lista para ser usada dentro del bloque `if`, eliminando la necesidad de casts manuales.
+
+2. TABLA COMPARATIVA: CLASE ABSTRACTA FRENTE A INTERFAZ
+-------------------------------------------------------------------------------
+ASPECTO             CLASE ABSTRACTA                     INTERFAZ
+-------------------------------------------------------------------------------
+Cuándo usarla       Compartir código y estado entre     Definir un contrato común entre clases no
+                    clases íntimamente emparentadas.     emparentadas (ej. Efectivo y Billetera).
+Atributos           Cualquier tipo (privados, mutables). Constantes estáticas (`public static final`).
+Constructores       Sí (invocados con super desde hijas).NO tiene constructores.
+Herencia            Herencia simple: una sola por clase. Múltiple: `implements A, B, C`.
+Métodos             Abstractos y concretos sin restricción. Abstractos, default y static públicos.
+
+3. REGLA DE ARQUITECTURA: PROGRAMAR CONTRA LA INTERFAZ
+-------------------------------------------------------------------------------
+Al escribir métodos como `String cobrar(MedioDePago medio, int valor)`, el código depende de la
+abstracción `MedioDePago` y no de concreciones particulares (`Efectivo`, `Tarjeta`, `Billetera`).
+Si mañana el café acepta pagos con Criptomonedas, se añade una nueva clase `Cripto implements MedioDePago`
+y la caja registradora funciona sin modificar una sola línea de código existente.

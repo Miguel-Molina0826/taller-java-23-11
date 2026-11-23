@@ -1,0 +1,119 @@
+===============================================================================
+CAFÉ SINTAXIS · NIVEL 07: PRINCIPIOS SOLID
+SALIDAS DE CONSOLA, PREDICCIONES, TALLERES Y EVALUACIÓN RESUELTA
+===============================================================================
+
+1. SALIDA REAL DE CONSOLA AL EJECUTAR EL NIVEL 07
+-------------------------------------------------------------------------------
+$ java Main.java
+=== CAFÉ SINTAXIS · NIVEL 07: PRINCIPIOS SOLID ===
+--- 1. Ejecución con CajaVieja (Monolito) ---
+TICKET · total $18000
+SMS a 300 555 0101: gracias
+TICKET · total $-500
+SMS a 300 555 0102: gracias
+
+--- 2. Ejecución con Caja Limpia (SOLID) ---
+TICKET · total $18000
+SMS a 300 555 0101: gracias
+TICKET · total $0
+SMS a 300 555 0102: gracias
+TICKET · total $14000
+SMS a 300 555 0103: gracias
+
+--- 3. Pruebas con Cocina e Impresora ---
+COMANDA › Preparar: Café Mocha con avena
+
+--- 4. Pruebas con Reporte Diario (SRP, OCP, DIP) ---
+REPORTE DIARIO
+Ventas: 5
+Total: $43000
+
+--- Exportación a CSV ---
+ventas,total
+5,43000
+
+2. PREDICCIONES PRIMM (SESIÓN 03 Y 04)
+-------------------------------------------------------------------------------
+* Predicción 1 (Sesión 03): ¿Por qué en la caja vieja el cobro dio -$500?
+  - Respuesta: Porque la compra era de 1500 y el descuento de fidelidad restaba directamente 2000
+    (1500 - 2000 = -500), violando el principio de Liskov al devolver un total imposible para una venta.
+
+* Predicción 2 (Sesión 03): ¿Qué parte del sistema es la única que sabe qué implementaciones concretas se usan?
+  - Respuesta: La clase `Main.java` (el ensamblador o composition root). La clase `Caja` solo conoce
+    las interfaces abstractas `Notificador` y `Descuento`.
+
+3. SESIÓN 06: TALLER DE AUTOCOMPLETAR (Cocina e Impresora)
+-------------------------------------------------------------------------------
+Banco de palabras disponible (12 palabras; 7 se usan, 5 sobran):
+[ Impresora, void imprimir(String texto);, extends, Cocina, impresora, ImpresoraConsola, implements, new, class, interface, super, public ]
+
+Espacios resueltos y justificación frase por frase:
+- Espacio 1: `interface` -> Declara el contrato `public interface Impresora`.
+- Espacio 2: `void imprimir(String texto);` -> Método abstracto de la interfaz.
+- Espacio 3: `implements` -> Implementación del contrato `class ImpresoraConsola implements Impresora`.
+- Espacio 4: `Impresora` -> Tipo abstracto del campo `private final Impresora impresora;` en Cocina (DIP).
+- Espacio 5: `Impresora` -> Tipo del parámetro en el constructor `public Cocina(Impresora impresora)`.
+- Espacio 6: `impresora` -> Invocación delegada `impresora.imprimir(...)`.
+- Espacio 7: `new ImpresoraConsola()` -> Inyección de la dependencia concreta en Main.
+
+Preguntas de control:
+* Pregunta 1: ¿Qué principio se violaría si `Cocina` hiciera directamente `new ImpresoraConsola()`?
+  - Respuesta: Viola el Principio de Inversión de Dependencias (DIP). `Cocina` quedaría rígidamente
+    acoplada a la consola, impidiendo redirigir las comandas a una impresora térmica de cocina o a una pantalla.
+
+4. SESIÓN 08: EVALUACIÓN DE COMPROBACIÓN (CUESTIONARIO COMPLETO)
+-------------------------------------------------------------------------------
+1. OPCIÓN MÚLTIPLE (Recordar · DOK 1):
+   Pregunta: ¿Qué principio dice "abierto a la extensión, cerrado a la modificación"?
+   - Opciones: a) S, b) O, c) L, d) D.
+   - Respuesta correcta: b) O (Open/Closed Principle).
+   - Justificación: Permite agregar nuevos comportamientos creando nuevas clases sin alterar el código existente.
+
+2. OPCIÓN MÚLTIPLE (Analizar · DOK 2):
+   Pregunta: Fidelidad devolvía -500. ¿Qué principio violaba?
+   - Opciones: a) Responsabilidad única, b) Sustitución de Liskov: rompía el contrato «nunca negativo», c) Segregación de interfaces, d) Ninguno.
+   - Respuesta correcta: b) Sustitución de Liskov: rompía el contrato «nunca negativo».
+   - Justificación: Una subclase o implementación no puede violar los invariantes esperados por los clientes del contrato base.
+
+3. VERDADERO O FALSO (Comprender · DOK 1):
+   Afirmación: "Inyectar una dependencia por el constructor ayuda a probar una clase sin usar recursos reales."
+   - Respuesta: VERDADERO.
+   - Justificación: Permite inyectar dobles de prueba (`NotificadorMemoria`) para verificar la lógica sin enviar
+     mensajes SMS reales ni consumir servicios externos.
+
+4. RELACIONA (Comprender · DOK 2):
+   - S ---> ¿Cuántas razones tiene para cambiar?
+   - L ---> ¿La hija cumple lo que promete el padre?
+   - I ---> ¿Obligo a escribir métodos que no se usan?
+   - D ---> ¿Dependo de interfaces o de detalles?
+
+5. ORDENA (Aplicar · DOK 2):
+   Pasos de una refactorización segura:
+   - Orden: 1. Guardar la salida actual.
+            2. Separar una responsabilidad.
+            3. Ejecutar y comparar la salida.
+            4. Recién entonces mejorar comportamiento.
+            5. Repetir con la siguiente.
+
+6. RESPUESTA ABIERTA (Analizar · DOK 3):
+   Pregunta: Explica por qué Main es el único lugar que conoce SmsSimulado y qué ventaja tiene eso.
+   - Respuesta: Main actúa como el "Ensamblador" (Composition Root). La ventaja es que el núcleo del negocio
+     (`Caja`) permanece 100% puro y desacoplado de la tecnología de notificación. Si mañana se cambia a
+     WhatsApp o Email, `Caja` no se recompila ni se toca.
+
+7. RESPUESTA ABIERTA (Evaluar · DOK 3):
+   Pregunta: Para una calculadora de propinas de 20 líneas, ¿aplicarías los cinco principios?
+   - Respuesta: No de forma dogmática. Para un script o método trivial de 20 líneas sin cambios previstos,
+     aplicar los cinco principios crearía sobreingeniería (over-engineering), aumentando innecesariamente
+     la cantidad de interfaces y archivos. SOLID se justifica cuando el software evoluciona y existen
+     múltiples razones reales de cambio en el negocio.
+
+8. RESPUESTA ABIERTA (Crear · DOK 3):
+   Pregunta: Escribe un Descuento nuevo, HoraFeliz, que reste 30% y nunca devuelva negativo.
+   - Respuesta: Implementado completamente en `HoraFeliz.java` con `Math.max(0, total * 70 / 100)`.
+
+5. CIERRE DE METACOGNICIÓN Y MARCADOR
+-------------------------------------------------------------------------------
+- Semáforo: VERDE en los 5 principios SOLID, refactorización segura e inyección de dependencias.
+- Insignia ganada: «Arquitectura limpia» (Monolito desmontado, dependencias invertidas y Liskov respetado).

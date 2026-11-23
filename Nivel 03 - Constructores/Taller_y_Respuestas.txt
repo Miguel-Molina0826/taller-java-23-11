@@ -1,0 +1,131 @@
+===============================================================================
+CAFÉ SINTAXIS · NIVEL 03: CONSTRUCTORES
+SALIDAS DE CONSOLA, PREDICCIONES, TALLERES Y EVALUACIÓN RESUELTA
+===============================================================================
+
+1. SALIDA REAL DE CONSOLA AL EJECUTAR EL NIVEL 03
+-------------------------------------------------------------------------------
+$ java Main.java
+=== CAFÉ SINTAXIS · NIVEL 03: CONSTRUCTORES ===
+--- 1. Pruebas con Bebida ---
+Latte grande $11000 · con leche
+Tinto mediano $3500
+Latte + 2 extras: $14000
+Con cupón: $9900
+Rechazada: Sin nombre
+
+--- 2. Pruebas con Reserva ---
+Reserva: Valeria · 4 personas a las 20:00
+Reserva: Carlos · 2 personas a las 18:00
+
+--- 3. Pruebas con Postre ---
+Torta de chocolate · $8500 (450 cal)
+Muffin de arándanos · $6000 (250 cal)
+
+--- 4. Pruebas con Combo ---
+Combo: Capuchino + Galleta = $12000
+Combo 1 con 10% propina: $13200
+Combo: Espresso + sin postre = $5000
+
+--- 5. Pruebas con Domicilio ---
+Domicilio a Calle 100 # 15-20 · Costo de envío: $6000
+Domicilio a Av. Santander # 54-10 · Costo de envío: $4000
+
+2. PREDICCIONES PRIMM (SESIÓN 03 Y 04)
+-------------------------------------------------------------------------------
+* Predicción 1 (Sesión 03): ¿Qué imprime `new Bebida("Tinto", 3500)`?
+  - Respuesta: `Tinto mediano $3500`.
+  - Justificación: El constructor corto delega mediante `this(nombre, "mediano", precio, false)`.
+    Por ello, el tamaño asignado por defecto es "mediano" y leche es false.
+
+* Predicción 2 (Sesión 03): ¿Cuánto da `a.precioCon(2)` y `a.precioCon("CAFE10")`?
+  - Respuesta: `14000` y `9900`.
+  - Justificación:
+    - 2 extras: 11000 + (2 * 1500) = 14000.
+    - Cupón "CAFE10": 11000 * 90 / 100 = 9900 (10% descuento).
+
+* Predicción 3 (Sesión 03): ¿Qué pasa al compilar el prólogo con Java 21?
+  - Mensaje real de error:
+    `Bebida.java: error: call to this must be first statement in constructor`
+    `this(nombre, "mediano", precio, false);`
+    `^`
+  - Causa: Antes de Java 25 (JEP 513), el compilador prohibía cualquier instrucción antes de this/super.
+
+3. SESIÓN 06: TALLER DE AUTOCOMPLETAR (Postre.java y Main.java)
+-------------------------------------------------------------------------------
+Banco de palabras disponible (12 palabras; 7 se usan, 5 sobran):
+[ this(nombre, precio, 250), void, int, public, final, Postre, super, new, this.nombre, return, isBlank(), precio ]
+
+Espacios resueltos y justificación frase por frase:
+- Espacio 1: `Postre` -> Nombre del constructor canónico (mismo nombre de la clase).
+- Espacio 2: `this.nombre` -> Asignación desambiguada del atributo a partir del parámetro.
+- Espacio 3: `Postre` -> Declaración del segundo constructor sobrecargado.
+- Espacio 4: `isBlank()` -> Método de Java para validar en el prólogo si el texto no viene vacío ni con espacios.
+- Espacio 5: `this(nombre, precio, 250)` -> Delegación de constructores pasando calorías por defecto.
+- Espacio 6: `new` -> Operador de instanciación con el constructor completo.
+- Espacio 7: `new` -> Operador de instanciación con el constructor sobrecargado de 2 parámetros.
+
+Preguntas de control:
+* Pregunta 1: ¿Por qué conviene que el constructor corto delegue con `this(...)` en vez de copiar código?
+  - Respuesta: Para mantener un Único Punto de Verdad (Single Source of Truth). Si las reglas de validación
+    o los nombres de los atributos cambian, solo se modifica el constructor canónico principal.
+* Pregunta 2: ¿Qué error da intentar leer `this.precio` dentro del prólogo antes de `this(...)`?
+  - Respuesta: `cannot reference this before supertype constructor has been called`. Java impide leer
+    el estado del objeto antes de que se complete la cadena de constructores.
+
+4. SESIÓN 08: EVALUACIÓN DE COMPROBACIÓN (CUESTIONARIO COMPLETO)
+-------------------------------------------------------------------------------
+1. OPCIÓN MÚLTIPLE (Recordar · DOK 1):
+   Pregunta: ¿Qué distingue a un constructor de un método?
+   - Opciones: a) Empieza con get, b) Usa el nombre de la clase y no tiene tipo de retorno, c) Siempre es static, d) Siempre recibe un String.
+   - Respuesta correcta: b) Usa el nombre de la clase y no tiene tipo de retorno.
+   - Justificación: Sintácticamente es una función especial sin retorno dedicada a inicializar objetos.
+
+2. OPCIÓN MÚLTIPLE (Analizar · DOK 2):
+   Pregunta: Escribiste un constructor con parámetros y ahora `new Bebida()` no compila. ¿Por qué?
+   - Opciones: a) Falta import, b) El constructor por defecto solo existe si no declaras ninguno, c) Bebida es final, d) Falta un return.
+   - Respuesta correcta: b) El constructor por defecto solo existe si no declaras ninguno.
+   - Justificación: Java asume que si el programador definió constructores específicos, exige esos datos
+     obligatoriamente y retira el constructor vacío automático.
+
+3. VERDADERO O FALSO (Comprender · DOK 1):
+   Afirmación: "Dos métodos con el mismo nombre y los mismos parámetros, pero distinto tipo de retorno, son una sobrecarga válida."
+   - Respuesta: FALSO.
+   - Justificación: La sobrecarga se resuelve exclusivamente por la lista de tipos de parámetros (firma).
+     El tipo de retorno no permite al compilador determinar cuál método invocar en una llamada como `calcular()`.
+
+4. RELACIONA (Comprender · DOK 2):
+   - `this.precio` ---> El atributo del objeto (desambigua del parámetro).
+   - `this(...)`    ---> Llama a otro constructor de la misma clase.
+   - `final`        ---> Se asigna una sola vez (garantiza inmutabilidad).
+   - Prólogo        ---> Validar antes de delegar (novedad Java 25).
+
+5. ORDENA (Aplicar · DOK 2):
+   Orden de ejecución al hacer `new Bebida("Tinto", 3500)`:
+   - Orden: 1. Java elige el constructor de 2 parámetros.
+            2. El prólogo valida el nombre (`isBlank()`).
+            3. `this(...)` llama al constructor completo.
+            4. Se valida el precio (`precio <= 0`).
+            5. Se asignan los 4 campos.
+
+6. RESPUESTA ABIERTA (Analizar · DOK 3):
+   Pregunta: Explica por qué conviene que el constructor corto delegue con `this(...)`.
+   - Respuesta: Reduce la duplicación de código (DRY: Don't Repeat Yourself). Centraliza la lógica de
+     asignación y validación en un solo lugar. Si en el futuro se añade una regla sobre el precio,
+     esta aplicará automáticamente a todos los constructores delegados.
+
+7. RESPUESTA ABIERTA (Evaluar · DOK 3):
+   Pregunta: Julián prefiere setters a constructores "porque es más flexible". ¿Qué riesgo existe?
+   - Respuesta: Permite que existan objetos en un "estado zombi" (parcialmente inicializados). Un objeto
+     creado sin llamar a todos sus setters puede tener campos en `null` o `0`, provocando
+     `NullPointerException` inesperados en otras capas del sistema. Un constructor garantiza que el
+     objeto nace completo o no nace.
+
+8. RESPUESTA ABIERTA (Crear · DOK 3):
+   Pregunta: Escribe dos constructores para Domicilio(direccion, valor) y Domicilio(direccion) con valor 4000.
+   - Respuesta: Implementado en `Domicilio.java` con delegación `this(direccion, 4000);`.
+
+5. CIERRE DE METACOGNICIÓN Y MARCADOR
+-------------------------------------------------------------------------------
+- Semáforo: VERDE en constructores, sobrecarga y prólogos de Java 25.
+- Insignia ganada: «Bien nacido» (Objetos inmutables, prólogos probados y constructores robustos).

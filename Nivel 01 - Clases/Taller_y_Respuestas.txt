@@ -1,0 +1,166 @@
+===============================================================================
+CAFÉ SINTAXIS · NIVEL 01: CLASES
+SALIDAS DE CONSOLA, PREDICCIONES, TALLERES Y EVALUACIÓN RESUELTA
+===============================================================================
+
+1. SALIDA REAL DE CONSOLA AL EJECUTAR EL NIVEL 01
+-------------------------------------------------------------------------------
+$ java Main.java
+=== CAFÉ SINTAXIS · NIVEL 01: CLASES ===
+--- 1. Pruebas con Producto ---
+Latte · $9500 · stock 3
+¿Hay brownie? false
+Cobrar: $19000
+Latte · $9500 · stock 1
+No alcanza: hay 1
+
+--- 2. Pruebas con Cliente ---
+Sofía: 53 puntos
+¿Café gratis? true
+Sofía canjeó 50 puntos por un café.
+Sofía: 3 puntos
+
+--- 3. Pruebas con Mesa ---
+Mesa 4 ocupada por 3
+Mesa 4 libre
+
+--- 4. Pruebas con Barista ---
+Martín prepara un Latte
+Martín prepara un Latte
+Martín prepara un Latte
+Martín (mañana): 3 bebidas
+¿Martín merece pausa? false
+Ana prepara un Capuchino
+... (repite 21 veces) ...
+Ana (tarde): 21 bebidas
+¿Ana merece pausa (caso límite 21 >= 20)? true
+Ana recibió $5000 de propina. Total: $5000
+
+--- 5. Pruebas con Domicilio ---
+Domicilio en Carrera 7 # 45-12 · Pendiente
+Pedido despachado a la dirección: Carrera 7 # 45-12
+Domicilio en Carrera 7 # 45-12 · Entregado
+
+2. PREDICCIONES PRIMM (SESIÓN 03 Y 04) Y ANÁLISIS DE ERRORES
+-------------------------------------------------------------------------------
+* Predicción 1 (Sesión 03): ¿Qué imprime brownie.hayStock() si nunca se le asignó stock?
+  - Respuesta: Imprime `false`.
+  - Justificación técnica: En Java, los campos de tipo numérico primitivo (`int`) pertenecientes
+    a una instancia se inicializan automáticamente en `0`. Como `0 > 0` es falso, la condición de
+    `hayStock()` evalúa a `false`.
+
+* Predicción 2 (Sesión 03): ¿Cuánto vale `cobro` en la línea 11?
+  - Respuesta: Vale `19000`.
+  - Justificación: Se invocó `latte.vender(2)`. Como 2 <= 3 (stock disponible), descuenta 2 unidades
+    y retorna `2 * 9500 = 19000`.
+
+* Predicción 3 (Sesión 03): ¿Cuántos lattes quedan tras vender(2) y luego tras pedir 5?
+  - Respuesta: Tras `vender(2)` queda 1 latte. Al pedir 5, la condición `5 > 1` se cumple, imprime
+    "No alcanza: hay 1" y retorna 0 sin modificar el stock, por lo que sigue quedando 1 latte.
+
+* Predicción 4 (Sesión 03): Si creas un tercer Producto sin asignar nada, ¿qué imprime descripcion()?
+  - Respuesta: Imprime `null · $0 · stock 0`.
+
+* Experimento de error del compilador (Sesión 03):
+  - Línea: `latte.precioo = 9500;`
+  - Mensaje del compilador:
+    `Main.java: error: cannot find symbol`
+    `symbol: variable precioo`
+    `location: variable latte of type Producto`
+  - Causa: Se escribió mal el nombre del atributo. En Java no existe inferencia mágica de nombres.
+
+* Predicción 5 (Sesión 04): Cliente con 0 puntos compra $9999. ¿Cuántos puntos gana?
+  - Respuesta: Gana 9 puntos.
+  - Justificación: `9999 / 1000 = 9` debido a la división entera entre enteros en Java (trunca los
+    decimales sin redondear).
+
+3. SESIÓN 06: TALLER DE AUTOCOMPLETAR (Mesa.java y Main.java)
+-------------------------------------------------------------------------------
+Banco de palabras disponible (12 palabras; 7 se usan, 5 sobran):
+[ int, Mesa(), return, liberar, String, new, static, boolean, class, estado, void, ocupar ]
+
+Espacios resueltos y justificación frase por frase:
+- Espacio 1: `class` -> Declara formalmente el molde `Mesa`.
+- Espacio 2: `boolean` -> El tipo de dato para el atributo `ocupada` (verdadero o falso).
+- Espacio 3: `void` -> Tipo de retorno del método `liberar()`; ejecuta una acción de reseteo sin entregar valor.
+- Espacio 4: `return` -> Instrucción obligatoria para entregar el texto armado cuando la mesa está ocupada.
+- Espacio 5: `new` -> Operador de Java para instanciar en memoria el objeto `Mesa()`.
+- Espacio 6: `ocupar` -> Invocación del método pasando el argumento `(3)`.
+- Espacio 7: `estado` -> Invocación del método para consultar el estado del objeto tras liberarlo.
+
+Preguntas de control:
+* Pregunta 1: ¿Por qué el espacio 3 no puede ser boolean?
+  - Respuesta: Porque dentro del cuerpo del método `liberar()` no hay ninguna sentencia `return` que
+    devuelva `true` o `false`; sus sentencias son únicamente asignaciones (`personas = 0; ocupada = false;`).
+    Para ser `boolean`, el método tendría que entregar un resultado booleano indicando el éxito de la operación.
+* Pregunta 2: Si en el espacio 5 olvidas `new`, ¿qué error esperas?
+  - Mensaje de error: `cannot find symbol ... method Mesa()`.
+  - Explicación: El compilador interpreta `Mesa()` como la llamada a un método local que no existe, en
+    lugar de la creación de una nueva instancia.
+
+4. SESIÓN 08: EVALUACIÓN DE COMPROBACIÓN (CUESTIONARIO COMPLETO)
+-------------------------------------------------------------------------------
+1. OPCIÓN MÚLTIPLE (Recordar · DOK 1):
+   Pregunta: ¿Qué palabra crea un objeto nuevo a partir de una clase?
+   - Opciones: a) class, b) new, c) void, d) return.
+   - Respuesta correcta: b) new.
+   - Justificación: `new` es la palabra reservada en Java responsable de asignar memoria en el Heap,
+     ejecutar el constructor e instanciar el objeto.
+
+2. OPCIÓN MÚLTIPLE (Analizar · DOK 2):
+   Pregunta: El compilador dice "cannot find symbol ... variable precioo". ¿Qué pasó?
+   - Opciones: a) Falta new, b) El atributo no existe con ese nombre, c) El método debe ser void, d) Falta IO.
+   - Respuesta correcta: b) El atributo no existe con ese nombre.
+   - Justificación: Es un error léxico/sintáctico de identificación; la clase `Producto` define `precio`,
+     no `precioo`.
+
+3. VERDADERO O FALSO (Comprender · DOK 1):
+   Afirmación: "Dos objetos creados con la misma clase comparten siempre los mismos valores en sus atributos."
+   - Respuesta: FALSO.
+   - Justificación: La clase define qué atributos existen (la estructura), pero cada objeto creado con
+     `new` mantiene su propia memoria y estado independiente. Modificar el precio o stock de `latte` no
+     altera el de `brownie`.
+
+4. RELACIONA (Comprender · DOK 2):
+   - Atributo   ---> `int stock;` (variable declarada en la clase que define el estado).
+   - Método     ---> `boolean hayStock()` (bloque de código ejecutable que devuelve un valor).
+   - Objeto     ---> `latte` (referencia a una instancia concreta creada con new).
+   - Parámetro  ---> `int cantidad` (variable que recibe el método vender para operar).
+
+5. ORDENA (Aplicar · DOK 2):
+   Pasos para vender 2 lattes e imprimir el cobro:
+   - Orden: 1. Escribir la clase Producto con atributos y métodos.
+            2. Crear el objeto latte con new Producto().
+            3. Asignar nombre, precio y stock inicial.
+            4. Llamar al método latte.vender(2).
+            5. Imprimir el resultado con IO.println.
+
+6. RESPUESTA ABIERTA (Analizar · DOK 3):
+   Pregunta: ¿Por qué vender devuelve int y no void? ¿Qué perdería el programa de caja si fuera void?
+   - Respuesta: Devuelve `int` porque representa el monto económico total a cobrar por la transacción
+     (`cantidad * precio`). Si fuera `void`, el método actualizaría el inventario pero el programa de
+     la caja registradora no sabría cuánto dinero exigir al cliente a menos que recalculara el total
+     por fuera, duplicando la lógica de negocio y violando el principio de encapsulamiento.
+
+7. RESPUESTA ABIERTA (Evaluar · DOK 3):
+   Pregunta: Julián propone guardar el precio como texto (String). ¿Estás de acuerdo? Justifica con un ejemplo.
+   - Respuesta: En absoluto desacuerdo. Guardar valores monetarios como `String` impide realizar operaciones
+     matemáticas directas (sumas, multiplicaciones por cantidades, descuentos o divisiones de propinas).
+     Obligaría a parsear constantemente con `Integer.parseInt(precio)`, lo que incrementa el riesgo de
+     excepciones en tiempo de ejecución (`NumberFormatException`), desperdicia ciclos de CPU y anula las
+     ventajas de la seguridad de tipos estáticos de Java.
+
+8. RESPUESTA ABIERTA (Crear · DOK 3):
+   Pregunta: Escribe una clase Domicilio con 2 atributos y un método despachar() que cambie su estado.
+   - Respuesta: Implementada en el archivo `Domicilio.java` con los atributos `String direccion` y
+     `boolean entregado`, y el método `void despachar() { entregado = true; }`.
+
+5. CIERRE DE METACOGNICIÓN Y MARCADOR
+-------------------------------------------------------------------------------
+- Semáforo de autoeficacia: VERDE en explicación de clases, objetos, atributos, métodos y lectura de errores.
+- Insignia ganada: «Molde maestro» (Reto Barista completado, caso límite de 20 bebidas probado,
+  pregunta 6 explicada analíticamente).
+- Explicación en 60 segundos: ¿Por qué latte y brownie tienen precios distintos si salen del mismo molde?
+  Porque la clase Producto es solo la plantilla abstracta; cada vez que llamamos a `new Producto()`, la JVM
+  reserva una zona de memoria distinta e independiente en el Heap para cada objeto, permitiendo que cada uno
+  almacene sus propios valores de estado.

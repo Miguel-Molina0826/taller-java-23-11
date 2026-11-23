@@ -1,0 +1,57 @@
+===============================================================================
+CAFÉ SINTAXIS · NIVEL 04 DE 11: HERENCIA
+Título oficial: HERENCIA (Herencia y composición · Familias del menú)
+Pregunta guía: ¿Cómo reutiliza Java lo que todos los productos comparten y cómo arma un pedido a partir de piezas?
+Ruta pedagógica: Bloom (Recordar -> Comprender -> Aplicar -> Analizar -> Evaluar -> Crear) | DOK 1 a 3
+===============================================================================
+
+1. DEFINICIONES FORMALES Y ESPECIFICACIÓN DEL LENGUAJE (JLS JAVA SE 25)
+-------------------------------------------------------------------------------
+* Herencia Simple (Inheritance - JLS §8.1.4):
+  Mecanismo mediante el cual una clase (subclase o hija) deriva de otra (superclase o padre)
+  utilizando la palabra clave `extends`.
+  En Java la herencia es estrictamente simple: una clase solo puede tener UNA superclase directa.
+  Toda clase que no declare `extends` hereda automáticamente de `java.lang.Object`.
+
+* Relación «Es un» (Is-a Relationship):
+  Condición lógica para justificar la herencia. Si la afirmación "¿Un [Subtipo] ES UN [SuperTipo]?"
+  es siempre verdadera en el modelo de negocio, la herencia es adecuada.
+  Ejemplo: "Un Latte ES UN Producto".
+
+* Composición y Relación «Tiene un» (Has-a Relationship):
+  Mecanismo donde una clase contiene una o más referencias a otras clases como atributos de
+  instancia.
+  Ejemplo: "Un Pedido TIENE Líneas de pedido"; "Una Línea TIENE un Producto".
+  En diseño orientado a objetos: "Preferir composición sobre herencia" (Bloch & Gamma), debido
+  a que la composición ofrece bajo acoplamiento y flexibilidad en tiempo de ejecución.
+
+* La instrucción `super(...)` (Constructor Chaining - JLS §8.8.7):
+  Los constructores NO se heredan. La subclase debe invocar explícitamente al constructor de su
+  padre mediante `super(argumentos)` como parte del proceso de inicialización de la instancia.
+
+* Sobrescritura de Métodos y Anotación `@Override` (JLS §8.4.8.1, §9.6.4.4):
+  Una subclase redefine la implementación de un método heredado con exactamente la misma firma.
+  La anotación `@Override` es una directiva para el compilador: verifica que el método efectivamente
+  esté sobrescribiendo un método de la superclase, evitando errores silenciosos de tipeo.
+  Para reutilizar la lógica del padre se usa `super.metodo()`.
+
+* Polimorfismo y Despacho Dinámico de Métodos (Dynamic Method Dispatch):
+  Capacidad de una variable de tipo padre (`Producto`) de referenciar instancias de cualquiera
+  de sus hijas (`Bebida`, `Postre`, `Temporada`).
+  Al llamar a `p.descripcion()`, la JVM ejecuta en tiempo de ejecución la versión correspondiente
+  a la clase real del objeto instanciado, no el tipo de la referencia declarada.
+
+2. TABLA COMPARATIVA: HERENCIA (EXTENDS) FRENTE A COMPOSICIÓN (ATRIBUTO)
+-------------------------------------------------------------------------------
+PREGUNTA            HERENCIA (EXTENDS)                  COMPOSICIÓN (TIENE UN)
+-------------------------------------------------------------------------------
+Relación conceptual «Es un» (Latte es un Producto).     «Tiene un» (Pedido tiene Líneas).
+Superclases/Piezas  Una sola superclase directa.        Todas las variables/piezas necesarias.
+Acoplamiento        Alto: cambios en padre afectan hijas. Bajo: se cambian piezas sin tocar dueño.
+Cambio en ejecución Fijo en compilación.                Dinámico: se puede sustituir la pieza.
+Pruebas unitarias   Requiere probar la jerarquía total. Se prueba cada pieza de forma aislada.
+
+3. REGLAS DE ORO DEL DISEÑO ORIENTADO A OBJETOS
+-------------------------------------------------------------------------------
+1. No usar herencia para compartir simples campos si no existe una verdadera relación jerárquica.
+2. Componer cuando un objeto actúa como contenedor o coordinador de otras entidades.
